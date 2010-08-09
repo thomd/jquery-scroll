@@ -48,6 +48,27 @@
             someFunction1();
             $.scrollbar.makeSomething();
 
+
+            // build DOM nodes for pane and scroll-handle
+            //
+            //      <div class="scrollbar">
+            //          <div class="scrollbar-pane">
+            //              [...]
+            //          </div>
+            //          <div class="scrollbar-handle-container">
+            //              <div class="scrollbar-handle"></div>
+            //          </div>
+            //          <div class="scrollbar-handle-up"></div>
+            //          <div class="scrollbar-handle-down"></div>
+            //      </div>
+            //
+            // The DOM is slow - you want to avoid manipulating it as much as possible. Remove an element from the DOM while you work with it:
+            var cont = container.children().detach();
+            cont.wrapAll('<div class="scrollbar-pane" />');
+            cont.after('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>');
+            cont.after('<div class="scrollbar-handle-up" />');
+            cont.after('<div class="scrollbar-handle-down" />');
+            container.append(cont);
         });
     }
 
