@@ -1,8 +1,10 @@
-.scrollbar {
+/* right prototype */
+
+.right.scrollbar {
     position: relative;
 }
 
-.scrollbar .scrollbar-pane {
+.right.scrollbar .scrollbar-pane {
     position: absolute;
     overflow: visible;
     top: 0;
@@ -11,7 +13,7 @@
     margin-right: 20px;
 }
 
-.scrollbar .scrollbar-handle-container {
+.right.scrollbar .scrollbar-handle-container {
     position: absolute;
     right: 0;
     top: 20px;
@@ -20,7 +22,7 @@
     width: 20px;
 }
 
-.scrollbar .scrollbar-handle-container .scrollbar-handle {
+.right.scrollbar .scrollbar-handle-container .scrollbar-handle {
     position: absolute;
     top: 0;
     right: 0;
@@ -29,7 +31,7 @@
     background: #999;
 }
 
-.scrollbar .scrollbar-handle-up {
+.right.scrollbar .scrollbar-handle-up {
     position: absolute;
     top: 0;
     right: 0;
@@ -38,7 +40,7 @@
     background: #DDD;
 }
 
-.scrollbar .scrollbar-handle-down {
+.right.scrollbar .scrollbar-handle-down {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -47,3 +49,36 @@
     background: #DDD;
 }
 
+/* top-bottom prototype */
+
+.top-bottom.scrollbar {
+    position: relative;
+}
+
+.top-bottom.scrollbar .scrollbar-pane {
+    position: absolute;
+    overflow: visible;
+    top: 0;
+    left: 0;
+    height: auto;
+}
+
+.top-bottom.scrollbar .scrollbar-handle-up {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 250px;
+    height: 20px;
+    background: #DDD;
+    opacity: 0.7;
+}
+
+.top-bottom.scrollbar .scrollbar-handle-down {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 250px;
+    height: 20px;
+    background: #DDD;
+    opacity: 0.7;
+}
