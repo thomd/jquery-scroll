@@ -37,40 +37,66 @@
 
 
     $.fn.scrollbar = function(options){
+
         // Extend default options
         var options = $.extend({}, $.scrollbar.defaults, options);
 
-        return this.each(function(){
+        //
+        // append scrollbar to container
+        //
+        var append = {
+            scrollbar: function(i){
+                return {
+                    to: function(container){
+                        build.html(container);
+                    }
+                }
+            }
+        }
+
+        //
+        // html builder
+        //
+        var build = {
+            
+            html: function(node){
+
+                // build DOM nodes for pane and scroll-handle
+                //
+                //      <div class="scrollbar">
+                //          <div class="scrollbar-pane">
+                //              [...]
+                //          </div>
+                //          <div class="scrollbar-handle-container">
+                //              <div class="scrollbar-handle"></div>
+                //          </div>
+                //          <div class="scrollbar-handle-up"></div>
+                //          <div class="scrollbar-handle-down"></div>
+                //      </div>
+                //
+                node.children().wrapAll('<div class="scrollbar-pane" />');
+                node.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>')
+                    .append('<div class="scrollbar-handle-up" />')
+                    .append('<div class="scrollbar-handle-down" />');
+                return node;
+            }
+        }
+
+
+        //
+        // append scrollbar to every found element and return jquery object
+        //
+        return this.each(function(i){
 
             var container = $(this);
-
-            console.log("scrollbar", this, container, options.option1);
-            someFunction1();
-            $.scrollbar.makeSomething();
-
-
-            // build DOM nodes for pane and scroll-handle
-            //
-            //      <div class="scrollbar">
-            //          <div class="scrollbar-pane">
-            //              [...]
-            //          </div>
-            //          <div class="scrollbar-handle-container">
-            //              <div class="scrollbar-handle"></div>
-            //          </div>
-            //          <div class="scrollbar-handle-up"></div>
-            //          <div class="scrollbar-handle-down"></div>
-            //      </div>
-            //
-            // The DOM is slow - you want to avoid manipulating it as much as possible. Remove an element from the DOM while you work with it:
-            var cont = container.children().detach();
-            cont.wrapAll('<div class="scrollbar-pane" />');
-            cont.after('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>');
-            cont.after('<div class="scrollbar-handle-up" />');
-            cont.after('<div class="scrollbar-handle-down" />');
-            container.append(cont);
+            
+            append.scrollbar(i).to(container);
         });
     }
+
+
+
+
 
     /**
     * Function that is not accessible from the outside
