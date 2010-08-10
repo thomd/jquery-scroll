@@ -41,6 +41,11 @@
         // Extend default options
         var options = $.extend({}, $.scrollbar.defaults, options);
 
+
+        // Properties
+        var props = {};
+
+
         //
         // append scrollbar to container
         //
@@ -48,7 +53,15 @@
             scrollbar: function(i){
                 return {
                     to: function(container){
+                        
+                        // build HTML
                         build.html(container);
+                        
+                        // set corrent height of handle
+                        props.handleContainerHeight = container.find('.scrollbar-handle-container').height();
+                        props.handleHeight = props.containerHeight * props.handleContainerHeight / props.contentHeight;
+                        container.find('.scrollbar-handle').height(props.handleHeight);
+                        
                     }
                 }
             }
@@ -78,7 +91,6 @@
                 node.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>')
                     .append('<div class="scrollbar-handle-up" />')
                     .append('<div class="scrollbar-handle-down" />');
-                return node;
             }
         }
 
@@ -90,16 +102,18 @@
 
             var container = $(this);
             
-            // determine element heights
-            var containerHeight = container.height();
+            
+            // determine heights
+            props.containerHeight = container.height();
 
-            var contentHeight = 0;
+            props.contentHeight = 0;
             container.children().each(function(){
-                contentHeight += $(this).outerHeight();
+                props.contentHeight += $(this).outerHeight();
             });
+            
 
             // append scrollbar only if neccessary
-            if(contentHeight > containerHeight){
+            if(props.contentHeight > props.containerHeight){
                 append.scrollbar(i).to(container);
             }
         });
