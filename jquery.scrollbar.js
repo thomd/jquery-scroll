@@ -90,7 +90,18 @@
 
             var container = $(this);
             
-            append.scrollbar(i).to(container);
+            // determine element heights
+            var containerHeight = container.height();
+
+            var contentHeight = 0;
+            container.children().each(function(){
+                contentHeight += $(this).outerHeight();
+            });
+
+            // append scrollbar only if neccessary
+            if(contentHeight > containerHeight){
+                append.scrollbar(i).to(container);
+            }
         });
     }
 
