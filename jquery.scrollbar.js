@@ -45,6 +45,10 @@
 
         // Properties
         var props = {};
+        
+        
+        // scroll container
+        var container = null;
 
 
         //
@@ -53,25 +57,29 @@
         var append = {
             scrollbar: function(i){
                 return {
-                    to: function(container){
+                    to: function(node){
+
+                        container = node;
                         
                         // build HTML
-                        build.html(container);
+                        build.html();
                         
                         // set corrent height of handle
-                        build.handleHeight(container);
+                        build.handleHeight();
                         
+                        // append event handler
+                        build.appendEvents();
                     }
                 }
             }
         }
 
         //
-        // html builder
+        // DOM builder
         //
         var build = {
             
-            html: function(node){
+            html: function(){
                 //
                 // build DOM nodes for pane and scroll-handle
                 //
@@ -86,22 +94,61 @@
                 //          <div class="scrollbar-handle-down"></div>
                 //      </div>
                 //
-                node.children().wrapAll('<div class="scrollbar-pane" />');
-                node.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>')
+                container.children().wrapAll('<div class="scrollbar-pane" />');
+                container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>')
                     .append('<div class="scrollbar-handle-up" />')
                     .append('<div class="scrollbar-handle-down" />');
+                    
+                container.handle = container.find('.scrollbar-handle');
+                container.handleContainer = container.find('.scrollbar-handle-container');
             },
             
-            handleHeight: function(container){
+            handleHeight: function(){
                 //
                 // calculate height of handle.
                 // height of handle should indicate height of content.
                 //
-                props.handleContainerHeight = container.find('.scrollbar-handle-container').height();
+                props.handleContainerHeight = container.handleContainer.height();
                 props.handleHeight = Math.max(props.containerHeight * props.handleContainerHeight / props.contentHeight, options.handleMinHeight);
-                container.find('.scrollbar-handle').height(props.handleHeight);
+                container.handle.height(props.handleHeight);
+            },
+            
+            appendEvents: function(){
+                //
+                // append events on handle
+                //
+                container.handle.bind('mousedown.handle', startHandleMove);
             }
         }
+
+
+        //
+        // start moving of handle
+        //
+        var startHandleMove = function(ev){
+            ev.preventDefault();
+            container.handle = $(ev.target);
+//            console.log(container.handle);
+            container.handle.addClass('move');
+    		$(document).bind('mousemove.handle', onHandleMove).bind('mouseup.handle', endHandleMove);
+        };
+
+
+        //
+        // on moving of handle
+        //
+        var onHandleMove = function(ev){
+            ev.preventDefault();
+        };
+
+
+        //
+        // end moving of handle
+        //
+        var endHandleMove = function(ev){
+    		$(document).unbind('mousemove.handle', onHandleMove).unbind('mouseup.handle', endHandleMove);
+            container.handle.removeClass('move');
+        };
 
 
         //

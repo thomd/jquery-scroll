@@ -29,6 +29,11 @@
     width: 20px;
     height: 60px;
     background: #999;
+    cursor: pointer;
+}
+
+.right.scrollbar .scrollbar-handle-container .scrollbar-handle.move {
+    background: #333;
 }
 
 .right.scrollbar .scrollbar-handle-up {
