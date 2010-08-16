@@ -24,14 +24,15 @@
     * we could add public funtions here
     */
     $.scrollbar = {
-        // Default options that can be easily changed
+        
+        // default options
         defaults: {
-            option1: "value",
+            handleMinHeight: 30,         // min-height of handle (height is actually dependent on content height) 
             option2: "something"
         },
 
         makeSomething: function(){
-            console.log("makeSomething: ", $.scrollbar.defaults.option1);
+//            console.log("makeSomething: ", $.scrollbar.defaults.option1);
         }
     };
 
@@ -58,9 +59,7 @@
                         build.html(container);
                         
                         // set corrent height of handle
-                        props.handleContainerHeight = container.find('.scrollbar-handle-container').height();
-                        props.handleHeight = props.containerHeight * props.handleContainerHeight / props.contentHeight;
-                        container.find('.scrollbar-handle').height(props.handleHeight);
+                        build.handleHeight(container);
                         
                     }
                 }
@@ -73,7 +72,7 @@
         var build = {
             
             html: function(node){
-
+                //
                 // build DOM nodes for pane and scroll-handle
                 //
                 //      <div class="scrollbar">
@@ -91,6 +90,16 @@
                 node.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>')
                     .append('<div class="scrollbar-handle-up" />')
                     .append('<div class="scrollbar-handle-down" />');
+            },
+            
+            handleHeight: function(container){
+                //
+                // calculate height of handle.
+                // height of handle should indicate height of content.
+                //
+                props.handleContainerHeight = container.find('.scrollbar-handle-container').height();
+                props.handleHeight = Math.max(props.containerHeight * props.handleContainerHeight / props.contentHeight, options.handleMinHeight);
+                container.find('.scrollbar-handle').height(props.handleHeight);
             }
         }
 
