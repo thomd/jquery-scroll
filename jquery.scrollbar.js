@@ -28,30 +28,31 @@
 
         
         //
-        // append scrollbar to every found element and return jquery object
+        // append scrollbar to every found container and return jquery object for chainability
         //
         return this.each(function(i){
 
-            var container = $(this);
-            var props = {};
+            var container = $(this), 
+                props = {};
             
-            // determine heights
+            // determine container height
             props.containerHeight = container.height();
 
+            // determine inner content height
             props.contentHeight = 0;
             container.children().each(function(){
                 props.contentHeight += $(this).outerHeight();
             });
             
-
-            // append scrollbar only if neccessary
-            if(props.contentHeight > props.containerHeight){
-                var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
-                scrollbar.buildHtml();
-                
-                scrollbar.setHandleHeight();
-                scrollbar.appendEvents();
-            }
+            // do nothing and return if a scrollbar is not neccessary
+            if(props.contentHeight <= props.containerHeight) return true;
+            
+            // create scrollbar
+            var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
+            scrollbar.buildHtml();
+            
+            scrollbar.setHandleHeight();
+            scrollbar.appendEvents();
         });
     }
 
@@ -70,9 +71,9 @@
     // Scrollbar class properties
     //
     $.fn.scrollbar.Scrollbar = function(container, props, options){
-        this.container = container || null;
-        this.props =     props || {};
-        this.opts =      options || $.fn.scrollbar.defaults;
+        this.container = container;
+        this.props =     props;
+        this.opts =      options;
         this.mouse =     {};
     };
     
@@ -111,28 +112,23 @@
         // height of handle should indicate height of content.
         //
         setHandleHeight: function(){
-            var cont = this.container;
-            var prop = this.props;
-            prop.handleContainerHeight = cont.handleContainer.height();
-            prop.handleHeight = Math.max(prop.containerHeight * prop.handleContainerHeight / prop.contentHeight, this.opts.handleMinHeight);
-            cont.handle.height(prop.handleHeight);
+            this.props.handleContainerHeight = this.container.handleContainer.height();
+            this.props.handleHeight = Math.max(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight, this.opts.handleMinHeight);
+            this.container.handle.height(this.props.handleHeight);
         },
         
         //
         // append events on handle
         //
         appendEvents: function(){
-            var cont = this.container;
-            cont.handle.bind('mousedown.handle', {elem: this}, this.startHandleMove);
+            this.container.handle.bind('mousedown.handle', {elem: this}, this.startHandleMove);
         },
-        
-        
 
         //
         // get mouse position
         //
-        getMousePos: function(event) {
-			return event['pageY'] || (event['clientY'] + (document.documentElement['scrollTop'] || document.body['scrollTop'])) || 0;
+        getMousePos: function(ev) {
+			return ev.pageY || (ev.clientY + (document.documentElement.scrollTop || document.body.scrollTop)) || 0;
 		},
 
         //
@@ -145,8 +141,7 @@
             self.mouse.start = self.getMousePos(ev);
             self.container.handle.addClass('move');
     		$(document).bind('mousemove.handle', {elem: self}, self.onHandleMove).bind('mouseup.handle', {elem: self}, self.endHandleMove);
-
-console.log('startHandleMove', self.container.handle.top);
+//console.log('startHandleMove', self.container.handle.top);
         },
 
         //
@@ -156,10 +151,9 @@ console.log('startHandleMove', self.container.handle.top);
             var self = $(ev.data.elem)[0];
             self.mouse.delta = self.getMousePos(ev) - self.mouse.start;
             self.mouse.top = self.mouse.delta + self.container.handle.top;
-console.log('onHandleMove', self.mouse.delta, self.mouse.top, self.container.handle.top);
+//console.log('onHandleMove', self.mouse.delta, self.mouse.top, self.container.handle.top);
             self.container.handle.css({'top': self.mouse.delta + 'px'});
         },
-
 
         //
         // end moving of handle
