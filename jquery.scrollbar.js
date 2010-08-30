@@ -118,9 +118,15 @@
         // calculate height of handle.
         // height of handle should indicate height of content.
         //
+        //
+        //
         setHandleHeight: function(){
             this.props.handleContainerHeight = this.container.handleContainer.height();
             this.props.handleHeight = Math.max(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight, this.opts.handleMinHeight);
+            this.props.handleTop = {
+                min: 0,
+                max: this.props.handleContainerHeight - this.props.handleHeight
+            };
             this.container.handle.height(this.props.handleHeight);
         },
         
@@ -136,11 +142,10 @@
         //
         startHandleMove: function(ev){
             ev.preventDefault();
-            this.container.handle.top = this.container.handle.offset().top;
+            this.container.handle.start = this.container.handle.start || 0;
             this.mouse.start = this.getMousePos(ev);
-            this.container.handle.addClass('move');
     		$(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endHandleMove'));
-//console.log('startHandleMove', self.container.handle.top);
+            this.container.handle.addClass('move');
         },
 
         //
@@ -148,16 +153,20 @@
         //
         onHandleMove: function(ev){
             this.mouse.delta = this.getMousePos(ev) - this.mouse.start;
-            this.mouse.top = this.mouse.delta + this.container.handle.top;
-//console.log('onHandleMove', self.mouse.delta, self.mouse.top, self.container.handle.top);
-            this.container.handle.css({'top': this.mouse.delta + 'px'});
+            this.container.handle.top = this.container.handle.start + this.mouse.delta;
+            
+            // stay within range [handleTop.min, handleTop.max]
+            this.container.handle.top = (this.container.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.container.handle.top;
+            this.container.handle.top = (this.container.handle.top < this.props.handleTop.min) ? this.props.handleTop.min : this.container.handle.top;
+
+            this.container.handle.css({'top': this.container.handle.top + 'px'});
         },
 
         //
         // end moving of handle
         //
         endHandleMove: function(ev){
-            this.container.handle.top = this.container.handle.offset().top;
+            this.container.handle.start = this.container.handle.top;
     		$(document).unbind('mousemove.handle', this.onHandleMove).unbind('mouseup.handle', this.endHandleMove);
             this.container.handle.removeClass('move');
         }
