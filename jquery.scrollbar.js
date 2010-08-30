@@ -49,10 +49,6 @@
             
             // create scrollbar
             var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
-            scrollbar.buildHtml();
-            
-            scrollbar.setHandleHeight();
-            scrollbar.appendEvents();
         });
     }
 
@@ -75,6 +71,11 @@
         this.props =     props;
         this.opts =      options;
         this.mouse =     {};
+        
+        // initialize
+        this.buildHtml();
+        this.setHandleHeight();
+        this.appendEvents();
     };
     
     //
@@ -97,16 +98,22 @@
         //      </div>
         //
         buildHtml: function(){
-            var cont = this.container;
-            cont.children().wrapAll('<div class="scrollbar-pane" />');
-            cont.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>')
+            this.container.children().wrapAll('<div class="scrollbar-pane" />');
+            this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>')
                 .append('<div class="scrollbar-handle-up" />')
                 .append('<div class="scrollbar-handle-down" />');
 
-            cont.handle = cont.find('.scrollbar-handle');
-            cont.handleContainer = cont.find('.scrollbar-handle-container');
+            this.container.handle = this.container.find('.scrollbar-handle');
+            this.container.handleContainer = this.container.find('.scrollbar-handle-container');
         },
         
+        //
+        // append events on handle
+        //
+        appendEvents: function(){
+            this.container.handle.bind('mousedown.handle', $.proxy(this, 'startHandleMove'));
+        },
+
         //
         // calculate height of handle.
         // height of handle should indicate height of content.
@@ -117,13 +124,6 @@
             this.container.handle.height(this.props.handleHeight);
         },
         
-        //
-        // append events on handle
-        //
-        appendEvents: function(){
-            this.container.handle.bind('mousedown.handle', {elem: this}, this.startHandleMove);
-        },
-
         //
         // get mouse position
         //
@@ -136,11 +136,10 @@
         //
         startHandleMove: function(ev){
             ev.preventDefault();
-            var self = $(ev.data.elem)[0];
-            self.container.handle.top = self.container.handle.offset().top;
-            self.mouse.start = self.getMousePos(ev);
-            self.container.handle.addClass('move');
-    		$(document).bind('mousemove.handle', {elem: self}, self.onHandleMove).bind('mouseup.handle', {elem: self}, self.endHandleMove);
+            this.container.handle.top = this.container.handle.offset().top;
+            this.mouse.start = this.getMousePos(ev);
+            this.container.handle.addClass('move');
+    		$(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endHandleMove'));
 //console.log('startHandleMove', self.container.handle.top);
         },
 
@@ -148,21 +147,19 @@
         // on moving of handle
         //
         onHandleMove: function(ev){
-            var self = $(ev.data.elem)[0];
-            self.mouse.delta = self.getMousePos(ev) - self.mouse.start;
-            self.mouse.top = self.mouse.delta + self.container.handle.top;
+            this.mouse.delta = this.getMousePos(ev) - this.mouse.start;
+            this.mouse.top = this.mouse.delta + this.container.handle.top;
 //console.log('onHandleMove', self.mouse.delta, self.mouse.top, self.container.handle.top);
-            self.container.handle.css({'top': self.mouse.delta + 'px'});
+            this.container.handle.css({'top': this.mouse.delta + 'px'});
         },
 
         //
         // end moving of handle
         //
         endHandleMove: function(ev){
-            var self = $(ev.data.elem)[0];
-            self.container.handle.top = self.container.handle.offset().top;
-    		$(document).unbind('mousemove.handle', self.onHandleMove).unbind('mouseup.handle', self.endHandleMove);
-            self.container.handle.removeClass('move');
+            this.container.handle.top = this.container.handle.offset().top;
+    		$(document).unbind('mousemove.handle', this.onHandleMove).unbind('mouseup.handle', this.endHandleMove);
+            this.container.handle.removeClass('move');
         }
     };
 
