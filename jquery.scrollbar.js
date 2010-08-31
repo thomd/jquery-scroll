@@ -108,10 +108,18 @@
         },
         
         //
-        // append events on handle
+        // append events on handle and handle-container
         //
         appendEvents: function(){
+            
+            // append hover event on scrollbar-handle
+            this.container.handle.hover(this.hoverHandle);
+            
+            // append drag-drop event on scrollbar-handle
             this.container.handle.bind('mousedown.handle', $.proxy(this, 'startHandleMove'));
+            
+            // append click event on scrollbar-handle-container
+            this.container.handleContainer.bind('click.handle-container', $.proxy(this, 'handleContainerClick'));
         },
 
         //
@@ -159,7 +167,8 @@
             this.container.handle.top = (this.container.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.container.handle.top;
             this.container.handle.top = (this.container.handle.top < this.props.handleTop.min) ? this.props.handleTop.min : this.container.handle.top;
 
-            this.container.handle.css({'top': this.container.handle.top + 'px'});
+//            this.container.handle.css({'top': this.container.handle.top + 'px'});
+            this.container.handle[0].style.top = this.container.handle.top + 'px';
         },
 
         //
@@ -169,6 +178,23 @@
             this.container.handle.start = this.container.handle.top;
     		$(document).unbind('mousemove.handle', this.onHandleMove).unbind('mouseup.handle', this.endHandleMove);
             this.container.handle.removeClass('move');
+        },
+        
+        //
+        //
+        //
+        handleContainerClick: function(ev){
+            ev.preventDefault();
+            ev.stopPropagation();
+            if(!$(ev.target).hasClass('scrollbar-handle-container')) return false;
+            console.log('click on handleContainer');
+        },
+
+        //
+        // event handler for hovering the scrollbar-handle
+        //
+        hoverHandle: function(ev){
+            $(this).toggleClass('hover');
         }
     };
 

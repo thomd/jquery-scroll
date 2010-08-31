@@ -32,6 +32,10 @@
     cursor: pointer;
 }
 
+.right.scrollbar .scrollbar-handle-container .scrollbar-handle.hover {
+    background: #666;
+}
+
 .right.scrollbar .scrollbar-handle-container .scrollbar-handle.move {
     background: #333;
 }
