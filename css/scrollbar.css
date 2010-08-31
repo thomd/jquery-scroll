@@ -47,6 +47,7 @@
     width: 20px;
     height: 20px;
     background: #DDD;
+    cursor: pointer;
 }
 
 .right.scrollbar .scrollbar-handle-down {
@@ -56,6 +57,15 @@
     width: 20px;
     height: 20px;
     background: #DDD;
+    cursor: pointer;
+}
+
+.right.scrollbar .scrollbar-handle-up.hover {
+    background: #666;
+}
+
+.right.scrollbar .scrollbar-handle-down.hover {
+    background: #666;
 }
 
 /* top-bottom prototype */

@@ -58,7 +58,9 @@
     // default options
     //
     $.fn.scrollbar.defaults = {
-        handleMinHeight: 30         // min-height of handle (height is actually dependent on content height) 
+        handleMinHeight: 30,         // min-height of handle (height is actually dependent on content height) 
+        arrowScrollSpeed: 100,       // TODO
+        arrowScrollDistance: 10      // TODO
     };
 
 
@@ -105,6 +107,7 @@
 
             this.container.handle = this.container.find('.scrollbar-handle');
             this.container.handleContainer = this.container.find('.scrollbar-handle-container');
+            this.container.handleArrows = this.container.find('.scrollbar-handle-up, .scrollbar-handle-down');
         },
         
         //
@@ -115,11 +118,17 @@
             // append hover event on scrollbar-handle
             this.container.handle.hover(this.hoverHandle);
             
+            // append hover event on scrollbar-arrows
+            this.container.handleArrows.hover(this.hoverHandle);
+            
             // append drag-drop event on scrollbar-handle
             this.container.handle.bind('mousedown.handle', $.proxy(this, 'moveHandleStart'));
             
             // append click event on scrollbar-handle-container
             this.container.handleContainer.bind('click.handle', $.proxy(this, 'clickHandleContainer'));
+            
+            // append click event on scrollbar-up- and down-handles
+            this.container.handleArrows.bind('mousedown.handle', $.proxy(this, 'clickHandleArrows'));
         },
 
         //
@@ -194,6 +203,25 @@
             }
             this.container.handle.start = this.container.handle.top;
             this.container.handle[0].style.top = this.container.handle.top + 'px';
+        },
+
+        //
+        // append click handler on handle-arrows
+        //
+        clickHandleArrows: function(ev){
+            ev.preventDefault();
+            var direction = $(ev.target).hasClass('scrollbar-handle-up') ? -1 : 1;
+            var self = this;
+            var timer = setInterval(function(){
+                if(direction == 1){
+                    self.container.handle.top = Math.min(self.container.handle.top + self.opts.arrowScrollDistance, self.props.handleTop.max);
+                } else {
+                    self.container.handle.top = Math.max(self.container.handle.top - self.opts.arrowScrollDistance, self.props.handleTop.min);
+                }
+                self.container.handle.start = self.container.handle.top;
+                self.container.handle[0].style.top = self.container.handle.top + 'px';
+            }, this.opts.arrowScrollSpeed);
+    		$(document).bind('mouseup.arrows', function(){clearInterval(timer);});
         },
 
         //
