@@ -74,7 +74,7 @@
         
         // initialize
         this.buildHtml();
-        this.setHandleHeight();
+        this.setHandlePosition();
         this.appendEvents();
     };
     
@@ -119,14 +119,14 @@
             this.container.handle.bind('mousedown.handle', $.proxy(this, 'moveHandleStart'));
             
             // append click event on scrollbar-handle-container
-            this.container.handleContainer.bind('click.handle-container', $.proxy(this, 'clickHandleContainer'));
+            this.container.handleContainer.bind('click.handle', $.proxy(this, 'clickHandleContainer'));
         },
 
         //
         // calculate height of handle.
         // height of handle should indicate height of content.
         //
-        setHandleHeight: function(){
+        setHandlePosition: function(){
             this.props.handleContainerHeight = this.container.handleContainer.height();
             this.props.handleHeight = Math.max(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight, this.opts.handleMinHeight);
             this.props.handleTop = {
@@ -134,6 +134,7 @@
                 max: this.props.handleContainerHeight - this.props.handleHeight
             };
             this.container.handle.height(this.props.handleHeight);
+            this.container.handle.top = 0;
         },
         
         //
@@ -148,7 +149,7 @@
         //
         moveHandleStart: function(ev){
             ev.preventDefault();
-            this.container.handle.start = this.container.handle.start || 0;
+            this.container.handle.start = this.container.handle.start || this.container.handle.top;
             this.mouse.start = this.mousePosition(ev);
     		$(document).bind('mousemove.handle', $.proxy(this, 'moveHandle')).bind('mouseup.handle', $.proxy(this, 'moveHandleEnd'));
             this.container.handle.addClass('move');
@@ -178,13 +179,21 @@
         },
         
         //
-        // 
+        // append click handler on handle-container (to click up and down the handle) 
         //
         clickHandleContainer: function(ev){
             ev.preventDefault();
-            ev.stopPropagation();
             if(!$(ev.target).hasClass('scrollbar-handle-container')) return false;
-            console.log('click on handleContainer');
+            
+            var direction = (this.container.handle.offset().top < this.mousePosition(ev)) ? 1 : -1;
+            
+            if(direction == 1){
+                this.container.handle.top = this.container.handle.top + (this.props.handleTop.max - this.container.handle.top) * 0.5;
+            } else {
+                this.container.handle.top = this.container.handle.top - (this.container.handle.top - this.props.handleTop.min) * 0.5;
+            }
+            this.container.handle.start = this.container.handle.top;
+            this.container.handle[0].style.top = this.container.handle.top + 'px';
         },
 
         //
@@ -196,5 +205,3 @@
     };
 
 })(jQuery);  // inject global jQuery object
-
-
