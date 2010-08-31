@@ -116,17 +116,15 @@
             this.container.handle.hover(this.hoverHandle);
             
             // append drag-drop event on scrollbar-handle
-            this.container.handle.bind('mousedown.handle', $.proxy(this, 'startHandleMove'));
+            this.container.handle.bind('mousedown.handle', $.proxy(this, 'moveHandleStart'));
             
             // append click event on scrollbar-handle-container
-            this.container.handleContainer.bind('click.handle-container', $.proxy(this, 'handleContainerClick'));
+            this.container.handleContainer.bind('click.handle-container', $.proxy(this, 'clickHandleContainer'));
         },
 
         //
         // calculate height of handle.
         // height of handle should indicate height of content.
-        //
-        //
         //
         setHandleHeight: function(){
             this.props.handleContainerHeight = this.container.handleContainer.height();
@@ -141,49 +139,48 @@
         //
         // get mouse position
         //
-        getMousePos: function(ev) {
+        mousePosition: function(ev) {
 			return ev.pageY || (ev.clientY + (document.documentElement.scrollTop || document.body.scrollTop)) || 0;
 		},
 
         //
         // start moving of handle
         //
-        startHandleMove: function(ev){
+        moveHandleStart: function(ev){
             ev.preventDefault();
             this.container.handle.start = this.container.handle.start || 0;
-            this.mouse.start = this.getMousePos(ev);
-    		$(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endHandleMove'));
+            this.mouse.start = this.mousePosition(ev);
+    		$(document).bind('mousemove.handle', $.proxy(this, 'moveHandle')).bind('mouseup.handle', $.proxy(this, 'moveHandleEnd'));
             this.container.handle.addClass('move');
         },
 
         //
         // on moving of handle
         //
-        onHandleMove: function(ev){
-            this.mouse.delta = this.getMousePos(ev) - this.mouse.start;
+        moveHandle: function(ev){
+            this.mouse.delta = this.mousePosition(ev) - this.mouse.start;
             this.container.handle.top = this.container.handle.start + this.mouse.delta;
             
             // stay within range [handleTop.min, handleTop.max]
             this.container.handle.top = (this.container.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.container.handle.top;
             this.container.handle.top = (this.container.handle.top < this.props.handleTop.min) ? this.props.handleTop.min : this.container.handle.top;
 
-//            this.container.handle.css({'top': this.container.handle.top + 'px'});
             this.container.handle[0].style.top = this.container.handle.top + 'px';
         },
 
         //
         // end moving of handle
         //
-        endHandleMove: function(ev){
+        moveHandleEnd: function(ev){
             this.container.handle.start = this.container.handle.top;
-    		$(document).unbind('mousemove.handle', this.onHandleMove).unbind('mouseup.handle', this.endHandleMove);
+    		$(document).unbind('mousemove.handle', this.moveHandle).unbind('mouseup.handle', this.moveHandleEnd);
             this.container.handle.removeClass('move');
         },
         
         //
+        // 
         //
-        //
-        handleContainerClick: function(ev){
+        clickHandleContainer: function(ev){
             ev.preventDefault();
             ev.stopPropagation();
             if(!$(ev.target).hasClass('scrollbar-handle-container')) return false;
@@ -197,7 +194,6 @@
             $(this).toggleClass('hover');
         }
     };
-
 
 })(jQuery);  // inject global jQuery object
 
