@@ -41,9 +41,10 @@
             // determine inner content height
             props.contentHeight = 0;
             container.children().each(function(){
+//                console.log($(this), $(this).height(), $(this).outerHeight());
                 props.contentHeight += $(this).outerHeight();
             });
-            
+//            debugger;
             // do nothing and return if a scrollbar is not neccessary
             if(props.contentHeight <= props.containerHeight) return true;
             
@@ -76,7 +77,7 @@
         
         // initialize
         this.buildHtml();
-        this.setHandlePosition();
+        this.initHandle();
         this.appendEvents();
     };
     
@@ -105,6 +106,7 @@
                 .append('<div class="scrollbar-handle-up" />')
                 .append('<div class="scrollbar-handle-down" />');
 
+            this.pane = this.container.find('.scrollbar-pane');
             this.handle = this.container.find('.scrollbar-handle');
             this.handleContainer = this.container.find('.scrollbar-handle-container');
             this.handleArrows = this.container.find('.scrollbar-handle-up, .scrollbar-handle-down');
@@ -135,8 +137,16 @@
         // calculate height of handle.
         // height of handle should indicate height of content.
         //
-        setHandlePosition: function(){
+        initHandle: function(){
             this.props.handleContainerHeight = this.handleContainer.height();
+            
+            // we need to calculate content-height again: due to the added scrollbar, the width decreased - hence the height increased!
+            var contentHeight = 0;
+            this.pane.children().each(function(){
+                contentHeight += $(this).outerHeight();
+            });
+            this.props.contentHeight = contentHeight;
+            
             this.props.handleHeight = Math.max(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight, this.opts.handleMinHeight);
             this.props.handleTop = {
                 min: 0,
@@ -144,6 +154,7 @@
             };
             this.handle.height(this.props.handleHeight);
             this.handle.top = 0;
+            this.handleContentRatio = (this.props.contentHeight - this.props.containerHeight) / (this.props.handleContainerHeight - this.props.handleHeight);
         },
         
         //
@@ -178,8 +189,10 @@
             // stay within range [handleTop.min, handleTop.max]
             this.handle.top = (this.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.handle.top;
             this.handle.top = (this.handle.top < this.props.handleTop.min) ? this.props.handleTop.min : this.handle.top;
-
             this.handle[0].style.top = this.handle.top + 'px';
+            
+            this.pane.top = this.handleContentRatio * this.handle.top * (-1);
+            this.pane[0].style.top = this.pane.top + 'px';
         },
 
         //
