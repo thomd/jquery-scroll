@@ -119,7 +119,7 @@
             this.container.handle.hover(this.hoverHandle);
             
             // append hover event on scrollbar-arrows
-            this.container.handleArrows.hover(this.hoverHandle);
+            this.container.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
             
             // append drag-drop event on scrollbar-handle
             this.container.handle.bind('mousedown.handle', $.proxy(this, 'moveHandleStart'));
@@ -153,6 +153,9 @@
 			return ev.pageY || (ev.clientY + (document.documentElement.scrollTop || document.body.scrollTop)) || 0;
 		},
 
+
+        // ---------- event handler ---------------------------------------------------------------
+
         //
         // start moving of handle
         //
@@ -161,6 +164,7 @@
             this.container.handle.start = this.container.handle.start || this.container.handle.top;
             this.mouse.start = this.mousePosition(ev);
     		$(document).bind('mousemove.handle', $.proxy(this, 'moveHandle')).bind('mouseup.handle', $.proxy(this, 'moveHandleEnd'));
+    		this.container.handleArrows.unbind('mouseenter mouseleave', this.hoverHandle);
             this.container.handle.addClass('move');
         },
 
@@ -185,6 +189,7 @@
             this.container.handle.start = this.container.handle.top;
     		$(document).unbind('mousemove.handle', this.moveHandle).unbind('mouseup.handle', this.moveHandleEnd);
             this.container.handle.removeClass('move');
+            this.container.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
         },
         
         //
