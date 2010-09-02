@@ -125,10 +125,10 @@
             this.container.handle.bind('mousedown.handle', $.proxy(this, 'moveHandleStart'));
             
             // append click event on scrollbar-handle-container
-            this.container.handleContainer.bind('click.handle', $.proxy(this, 'clickHandleContainer'));
+            this.container.handleContainer.bind('mousedown.handle', $.proxy(this, 'clickHandleContainer'));
             
             // append click event on scrollbar-up- and down-handles
-            this.container.handleArrows.bind('mousedown.handle', $.proxy(this, 'clickHandleArrows'));
+            this.container.handleArrows.bind('mousedown.arrows', $.proxy(this, 'clickHandleArrows'));
         },
 
         //
@@ -200,13 +200,7 @@
             if(!$(ev.target).hasClass('scrollbar-handle-container')) return false;
             
             var direction = (this.container.handle.offset().top < this.mousePosition(ev)) ? 1 : -1;
-            
-            if(direction == 1){
-                this.container.handle.top = this.container.handle.top + (this.props.handleTop.max - this.container.handle.top) * 0.5;
-            } else {
-                this.container.handle.top = this.container.handle.top - (this.container.handle.top - this.props.handleTop.min) * 0.5;
-            }
-            this.container.handle.start = this.container.handle.top;
+            this.container.handle.start = this.container.handle.top = direction == 1 ? this.container.handle.top + (this.props.handleTop.max - this.container.handle.top) * 0.5 : this.container.handle.top - (this.container.handle.top - this.props.handleTop.min) * 0.5;
             this.container.handle[0].style.top = this.container.handle.top + 'px';
         },
 
@@ -216,17 +210,17 @@
         clickHandleArrows: function(ev){
             ev.preventDefault();
             var direction = $(ev.target).hasClass('scrollbar-handle-up') ? -1 : 1;
-            var self = this;
-            var timer = setInterval(function(){
-                if(direction == 1){
-                    self.container.handle.top = Math.min(self.container.handle.top + self.opts.arrowScrollDistance, self.props.handleTop.max);
-                } else {
-                    self.container.handle.top = Math.max(self.container.handle.top - self.opts.arrowScrollDistance, self.props.handleTop.min);
-                }
-                self.container.handle.start = self.container.handle.top;
-                self.container.handle[0].style.top = self.container.handle.top + 'px';
-            }, this.opts.arrowScrollSpeed);
-    		$(document).bind('mouseup.arrows', function(){clearInterval(timer);});
+            
+            var timer = setInterval($.proxy(function(){
+                this.container.handle.start = this.container.handle.top = direction == 1 ? Math.min(this.container.handle.top + this.opts.arrowScrollDistance, this.props.handleTop.max) : Math.max(this.container.handle.top - this.opts.arrowScrollDistance, this.props.handleTop.min);
+                this.container.handle[0].style.top = this.container.handle.top + 'px';
+            }, this), this.opts.arrowScrollSpeed);
+    		
+    		var clearTimer = function(){
+    		    clearInterval(timer);
+        		$(document).unbind('mouseup.arrows', clearTimer);
+    		}
+    		$(document).bind('mouseup.arrows', clearTimer);
         },
 
         //
