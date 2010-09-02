@@ -116,7 +116,7 @@
         appendEvents: function(){
             
             // append hover event on scrollbar-handle
-            this.handle.hover(this.hoverHandle);
+            this.handle.bind('mouseenter mouseleave', this.hoverHandle);
             
             // append hover event on scrollbar-arrows
             this.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
@@ -227,7 +227,11 @@
         // event handler for hovering the scrollbar-handle
         //
         hoverHandle: function(ev){
-            $(this).toggleClass('hover');
+            if(ev.type == 'mouseenter'){
+                $(this).addClass('hover');
+            } else {
+                $(this).removeClass('hover');
+            }
         }
     };
 
