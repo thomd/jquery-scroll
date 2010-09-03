@@ -190,7 +190,14 @@
             this.handle.top = (this.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.handle.top;
             this.handle.top = (this.handle.top < this.props.handleTop.min) ? this.props.handleTop.min : this.handle.top;
             this.handle[0].style.top = this.handle.top + 'px';
-            
+
+            this.moveContent();
+        },
+
+        //
+        // move content
+        //
+        moveContent: function(){
             this.pane.top = this.handleContentRatio * this.handle.top * (-1);
             this.pane[0].style.top = this.pane.top + 'px';
         },
@@ -215,6 +222,7 @@
             var direction = (this.handle.offset().top < this.mousePosition(ev)) ? 1 : -1;
             this.handle.start = this.handle.top = direction == 1 ? this.handle.top + (this.props.handleTop.max - this.handle.top) * 0.5 : this.handle.top - (this.handle.top - this.props.handleTop.min) * 0.5;
             this.handle[0].style.top = this.handle.top + 'px';
+            this.moveContent();
         },
 
         //
@@ -227,6 +235,7 @@
             var timer = setInterval($.proxy(function(){
                 this.handle.start = this.handle.top = direction == 1 ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
                 this.handle[0].style.top = this.handle.top + 'px';
+                this.moveContent();
             }, this), this.opts.scrollSpeed);
     		
     		var clearTimer = function(){
