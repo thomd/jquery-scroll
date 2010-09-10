@@ -41,10 +41,9 @@
             // determine inner content height
             props.contentHeight = 0;
             container.children().each(function(){
-//                console.log($(this), $(this).height(), $(this).outerHeight());
                 props.contentHeight += $(this).outerHeight();
             });
-//            debugger;
+
             // do nothing and return if a scrollbar is not neccessary
             if(props.contentHeight <= props.containerHeight) return true;
             
@@ -124,13 +123,16 @@
             this.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
             
             // append drag-drop event on scrollbar-handle
-            this.handle.bind('mousedown.handle', $.proxy(this, 'moveHandleStart'));
+            this.handle.bind('mousedown.handle', $.proxy(this, 'startOfHandleMove'));
             
             // append click event on scrollbar-handle-container
             this.handleContainer.bind('mousedown.handle', $.proxy(this, 'clickHandleContainer'));
             
-            // append click event on scrollbar-up- and down-handles
+            // append click event on scrollbar-up- and scrollbar-down-handles
             this.handleArrows.bind('mousedown.arrows', $.proxy(this, 'clickHandleArrows'));
+
+            // appen mousewheel event on content container
+            this.container.bind('mousewheel.container', $.proxy(this, 'onMouseWheel'));
         },
 
         //
@@ -158,11 +160,12 @@
         },
         
         //
-        // get mouse position
+        // get mouse position helper
         //
         mousePosition: function(ev) {
 			return ev.pageY || (ev.clientY + (document.documentElement.scrollTop || document.body.scrollTop)) || 0;
 		},
+
 
 
         // ---------- event handler ---------------------------------------------------------------
@@ -170,49 +173,107 @@
         //
         // start moving of handle
         //
-        moveHandleStart: function(ev){
+        startOfHandleMove: function(ev){
             ev.preventDefault();
+
+            // set start top-position of handle
             this.handle.start = this.handle.start || this.handle.top;
+            
+            // set start top-position of mouse
             this.mouse.start = this.mousePosition(ev);
-    		$(document).bind('mousemove.handle', $.proxy(this, 'moveHandle')).bind('mouseup.handle', $.proxy(this, 'moveHandleEnd'));
+            
+            // bind mousemove- and mouseout-event to document (binding it to document allows having a mousepointer outside handle while moving)
+    		$(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endOfHandleMove'));
+    		
+            // remove hover event on scrollbar-arrows (until end of handle move)
     		this.handleArrows.unbind('mouseenter mouseleave', this.hoverHandle);
+    		
+    		// add class for visual change while moving handle
             this.handle.addClass('move');
         },
 
         //
         // on moving of handle
         //
-        moveHandle: function(ev){
-            this.mouse.delta = this.mousePosition(ev) - this.mouse.start;
-            this.handle.top = this.handle.start + this.mouse.delta;
+        onHandleMove: function(ev){
             
-            // stay within range [handleTop.min, handleTop.max]
-            this.handle.top = (this.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.handle.top;
-            this.handle.top = (this.handle.top < this.props.handleTop.min) ? this.props.handleTop.min : this.handle.top;
-            this.handle[0].style.top = this.handle.top + 'px';
+            // calculate distance from position on start of move
+            var delta = this.mousePosition(ev) - this.mouse.start;
 
-            this.moveContent();
-        },
-
-        //
-        // move content
-        //
-        moveContent: function(){
-            this.pane.top = this.handleContentRatio * this.handle.top * (-1);
-            this.pane[0].style.top = this.pane.top + 'px';
+            // update positions
+            this.setHandlePosition(delta);
+            this.setContentPosition();
         },
 
         //
         // end moving of handle
         //
-        moveHandleEnd: function(ev){
+        endOfHandleMove: function(ev){
+            
+            // save position of handle
             this.handle.start = this.handle.top;
-    		$(document).unbind('mousemove.handle', this.moveHandle).unbind('mouseup.handle', this.moveHandleEnd);
-            this.handle.removeClass('move');
+            
+            // remove handle events
+    		$(document).unbind('mousemove.handle', this.onHandleMove).unbind('mouseup.handle', this.endOfHandleMove);
+//    		$(document).unbind('handle');
+
+            // re-attach hover event on scrollbar-arrows
             this.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
+
+            // remove class for visual change 
+            this.handle.removeClass('move');
         },
         
+
+
         //
+        // set position of handle
+        //
+        setHandlePosition: function(delta){
+            this.handle.top = this.handle.start + delta;
+            
+            // stay within range [handleTop.min, handleTop.max]
+            this.handle.top = (this.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.handle.top;
+            this.handle.top = (this.handle.top < this.props.handleTop.min) ? this.props.handleTop.min : this.handle.top;
+
+            this.handle[0].style.top = this.handle.top + 'px';
+        },
+
+
+
+        //
+        // set position of content
+        //
+        setContentPosition: function(){
+            
+            // derive position of content from position of handle 
+            this.pane.top = -1 * this.handleContentRatio * this.handle.top;
+            this.pane[0].style.top = this.pane.top + 'px';
+        },
+
+
+
+        //
+        // mouse wheel movement
+        //
+        onMouseWheel: function(ev, delta){
+
+            // set start position of handle
+            this.handle.start = this.handle.start || this.handle.top;
+
+            // calculate new handle position
+            var delta = this.handle.start - delta;
+
+
+            this.setHandlePosition(delta);
+            this.setContentPosition();
+
+            // save new handle position
+            this.handle.start = delta;
+        },
+
+        //
+        // TODO: document!
         // append click handler on handle-container (to click up and down the handle) 
         //
         clickHandleContainer: function(ev){
@@ -222,10 +283,11 @@
             var direction = (this.handle.offset().top < this.mousePosition(ev)) ? 1 : -1;
             this.handle.start = this.handle.top = direction == 1 ? this.handle.top + (this.props.handleTop.max - this.handle.top) * 0.5 : this.handle.top - (this.handle.top - this.props.handleTop.min) * 0.5;
             this.handle[0].style.top = this.handle.top + 'px';
-            this.moveContent();
+            this.setContentPosition();
         },
 
         //
+        // TODO: document!
         // append click handler on handle-arrows
         //
         clickHandleArrows: function(ev){
@@ -235,7 +297,7 @@
             var timer = setInterval($.proxy(function(){
                 this.handle.start = this.handle.top = direction == 1 ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
                 this.handle[0].style.top = this.handle.top + 'px';
-                this.moveContent();
+                this.setContentPosition();
             }, this), this.opts.scrollSpeed);
     		
     		var clearTimer = function(){
@@ -246,6 +308,7 @@
         },
 
         //
+        // TODO: document!
         // event handler for hovering the scrollbar-handle
         //
         hoverHandle: function(ev){
@@ -257,4 +320,81 @@
         }
     };
 
+
+
+    // ----- mousewheel event ---------------------------------------------------------------------
+    
+    $.event.special.mousewheel = {
+    
+        setup: function(){
+            if (this.addEventListener){
+                this.addEventListener('mousewheel', handler, false);
+                this.addEventListener('DOMMouseScroll', handler, false);
+            } else {
+                this.onmousewheel = handler;
+            }
+        },
+    
+        teardown: function(){
+            if (this.removeEventListener){
+                this.removeEventListener('mousewheel', handler, false);
+                this.removeEventListener('DOMMouseScroll', handler, false);
+            } else {
+                this.onmousewheel = null;
+            }
+        }
+    };
+
+
+    $.fn.extend({
+        mousewheel: function(fn){
+            return fn ? this.bind("mousewheel", fn) : this.trigger("mousewheel");
+        },
+    
+        unmousewheel: function(fn){
+            return this.unbind("mousewheel", fn);
+        }
+    });
+
+
+    function handler(event) {
+        var orgEvent = event || window.event, 
+            args = [].slice.call(arguments, 1), 
+            delta = 0, 
+            returnValue = true, 
+            deltaX = 0, 
+            deltaY = 0;
+            
+        event = $.event.fix(orgEvent);
+        event.type = "mousewheel";
+    
+        // Old school scrollwheel delta
+        if(event.wheelDelta){
+            delta = event.wheelDelta / 120;
+        }
+        if(event.detail){
+            delta = -event.detail / 3;
+        }
+    
+        // Gecko
+        if(orgEvent.axis !== undefined && orgEvent.axis === orgEvent.HORIZONTAL_AXIS){
+            deltaY = 0;
+            deltaX = -1 * delta;
+        }
+    
+        // Webkit
+        if(orgEvent.wheelDeltaY !== undefined){
+            deltaY = orgEvent.wheelDeltaY / 120;
+        }
+        if(orgEvent.wheelDeltaX !== undefined){
+            deltaX = -1 * orgEvent.wheelDeltaX / 120;
+        }
+    
+        // Add event and delta to the front of the arguments
+        args.unshift(event, delta, deltaX, deltaY);
+    
+        return $.event.handle.apply(this, args);
+    }
+
 })(jQuery);  // inject global jQuery object
+
