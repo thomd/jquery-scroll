@@ -218,8 +218,7 @@
         endOfHandleMove: function(ev){
             
             // remove handle events
-    		$(document).unbind('mousemove.handle', this.onHandleMove).unbind('mouseup.handle', this.endOfHandleMove);
-//    		$(document).unbind('handle');
+    		$(document).unbind('.handle');
 
             // re-attach hover event on scrollbar-arrows
             this.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
