@@ -176,11 +176,8 @@
         startOfHandleMove: function(ev){
             ev.preventDefault();
 
-            // set start top-position of handle
-            this.handle.start = this.handle.start || this.handle.top;
-            
             // set start top-position of mouse
-            this.mouse.start = this.mousePosition(ev);
+            this.mouse.top = this.mousePosition(ev);
             
             // bind mousemove- and mouseout-event to document (binding it to document allows having a mousepointer outside handle while moving)
     		$(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endOfHandleMove'));
@@ -192,26 +189,33 @@
             this.handle.addClass('move');
         },
 
+
         //
         // on moving of handle
         //
         onHandleMove: function(ev){
             
-            // calculate distance from position on start of move
-            var delta = this.mousePosition(ev) - this.mouse.start;
+            var mousePos = this.mousePosition(ev);
+            
+            // calculate distance since last fireing of this handler
+            var delta = mousePos - this.mouse.top;
+            this.mouse.top = mousePos;
+            
+            // calculate new handle position
+            this.handle.top += delta;
 
             // update positions
-            this.setHandlePosition(delta);
+            this.setHandlePosition(this.handle.top);
             this.setContentPosition();
+            
+            
         },
+
 
         //
         // end moving of handle
         //
         endOfHandleMove: function(ev){
-            
-            // save position of handle
-            this.handle.start = this.handle.top;
             
             // remove handle events
     		$(document).unbind('mousemove.handle', this.onHandleMove).unbind('mouseup.handle', this.endOfHandleMove);
@@ -225,12 +229,10 @@
         },
         
 
-
         //
         // set position of handle
         //
         setHandlePosition: function(delta){
-            this.handle.top = this.handle.start + delta;
             
             // stay within range [handleTop.min, handleTop.max]
             this.handle.top = (this.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.handle.top;
@@ -240,7 +242,6 @@
         },
 
 
-
         //
         // set position of content
         //
@@ -248,9 +249,9 @@
             
             // derive position of content from position of handle 
             this.pane.top = -1 * this.handleContentRatio * this.handle.top;
+            
             this.pane[0].style.top = this.pane.top + 'px';
         },
-
 
 
         //
@@ -258,19 +259,13 @@
         //
         onMouseWheel: function(ev, delta){
 
-            // set start position of handle
-            this.handle.start = this.handle.start || this.handle.top;
-
             // calculate new handle position
-            var delta = this.handle.start - delta;
+            this.handle.top -= delta;
 
-
-            this.setHandlePosition(delta);
+            this.setHandlePosition(this.handle.top);
             this.setContentPosition();
-
-            // save new handle position
-            this.handle.start = delta;
         },
+
 
         //
         // TODO: document!
@@ -306,6 +301,7 @@
     		}
     		$(document).bind('mouseup.arrows', clearTimer);
         },
+
 
         //
         // TODO: document!
