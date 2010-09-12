@@ -88,27 +88,43 @@
         //
         // build DOM nodes for pane and scroll-handle
         //
-        //      <div class="scrollbar">
-        //          <div class="scrollbar-pane">
+        //   from:
+        //
+        //      <div class="scrollbar">                             --> arbitrary element with class="scrollbar"
+        //          [...]
+        //      </div>
+        //
+        //   to:
+        //
+        //      <div class="scrollbar">                             --> this.container
+        //          <div class="scrollbar-pane">                    --> this.pane
         //              [...]
         //          </div>
-        //          <div class="scrollbar-handle-container">
-        //              <div class="scrollbar-handle"></div>
+        //          <div class="scrollbar-handle-container">        --> this.handleContainer
+        //              <div class="scrollbar-handle"></div>        --> this.handle
         //          </div>
-        //          <div class="scrollbar-handle-up"></div>
-        //          <div class="scrollbar-handle-down"></div>
+        //          <div class="scrollbar-handle-up"></div>         --> this.handleArrows
+        //          <div class="scrollbar-handle-down"></div>       --> this.handleArrows
         //      </div>
         //
         buildHtml: function(){
+
+            // set some necessary CSS attributes
+console.log(this.container.css('position'));
+            var position = this.container.css('position') == 'absolute' ? 'absolute' : 'relative';
+            this.container.css({'overflow': 'hidden', 'position': position});
+            
+            // build some DOM nodes
             this.container.children().wrapAll('<div class="scrollbar-pane" />');
             this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>')
-                .append('<div class="scrollbar-handle-up" />')
-                .append('<div class="scrollbar-handle-down" />');
+                          .append('<div class="scrollbar-handle-up" />')
+                          .append('<div class="scrollbar-handle-down" />');
 
-            this.pane = this.container.find('.scrollbar-pane');
-            this.handle = this.container.find('.scrollbar-handle');
+            // set scrollbar properties
+            this.pane =            this.container.find('.scrollbar-pane');
+            this.handle =          this.container.find('.scrollbar-handle');
             this.handleContainer = this.container.find('.scrollbar-handle-container');
-            this.handleArrows = this.container.find('.scrollbar-handle-up, .scrollbar-handle-down');
+            this.handleArrows =    this.container.find('.scrollbar-handle-up, .scrollbar-handle-down');
         },
         
         //
@@ -199,6 +215,7 @@
             
             // calculate distance since last fireing of this handler
             var delta = mousePos - this.mouse.top;
+//console.log(delta);
             this.mouse.top = mousePos;
             
             // calculate new handle position
