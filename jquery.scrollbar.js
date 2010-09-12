@@ -110,7 +110,6 @@
         buildHtml: function(){
 
             // set some necessary CSS attributes
-console.log(this.container.css('position'));
             var position = this.container.css('position') == 'absolute' ? 'absolute' : 'relative';
             this.container.css({'overflow': 'hidden', 'position': position});
             
@@ -120,13 +119,14 @@ console.log(this.container.css('position'));
                           .append('<div class="scrollbar-handle-up" />')
                           .append('<div class="scrollbar-handle-down" />');
 
-            // set scrollbar properties
+            // set scrollbar-object properties
             this.pane =            this.container.find('.scrollbar-pane');
             this.handle =          this.container.find('.scrollbar-handle');
             this.handleContainer = this.container.find('.scrollbar-handle-container');
             this.handleArrows =    this.container.find('.scrollbar-handle-up, .scrollbar-handle-down');
         },
-        
+
+
         //
         // append events on handle and handle-container
         //
@@ -151,6 +151,7 @@ console.log(this.container.css('position'));
             this.container.bind('mousewheel.container', $.proxy(this, 'onMouseWheel'));
         },
 
+
         //
         // calculate height of handle.
         // height of handle should indicate height of content.
@@ -174,7 +175,8 @@ console.log(this.container.css('position'));
             this.handle.top = 0;
             this.handleContentRatio = (this.props.contentHeight - this.props.containerHeight) / (this.props.handleContainerHeight - this.props.handleHeight);
         },
-        
+
+
         //
         // get mouse position helper
         //
