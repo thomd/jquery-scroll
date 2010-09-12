@@ -1,10 +1,6 @@
-/* right prototype */
+/* these are the most necessary styles */
 
-.right.scrollbar {
-    position: relative;
-}
-
-.right.scrollbar .scrollbar-pane {
+.scrollbar-pane {
     position: absolute;
     overflow: visible;
     top: 0;
@@ -13,7 +9,7 @@
     margin-right: 20px;
 }
 
-.right.scrollbar .scrollbar-handle-container {
+.scrollbar-handle-container {
     position: absolute;
     right: 0;
     top: 20px;
@@ -22,7 +18,7 @@
     width: 20px;
 }
 
-.right.scrollbar .scrollbar-handle-container .scrollbar-handle {
+.scrollbar-handle-container .scrollbar-handle {
     position: absolute;
     top: 0;
     right: 0;
@@ -32,15 +28,15 @@
     cursor: pointer;
 }
 
-.right.scrollbar .scrollbar-handle-container .scrollbar-handle.hover {
+.scrollbar-handle-container .scrollbar-handle.hover {
     background: #666;
 }
 
-.right.scrollbar .scrollbar-handle-container .scrollbar-handle.move {
+.scrollbar-handle-container .scrollbar-handle.move {
     background: #111;
 }
 
-.right.scrollbar .scrollbar-handle-up {
+.scrollbar-handle-up {
     position: absolute;
     top: 0;
     right: 0;
@@ -50,7 +46,7 @@
     cursor: pointer;
 }
 
-.right.scrollbar .scrollbar-handle-down {
+.scrollbar-handle-down {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -60,13 +56,15 @@
     cursor: pointer;
 }
 
-.right.scrollbar .scrollbar-handle-up.hover {
+.scrollbar-handle-up.hover {
     background: #666;
 }
 
-.right.scrollbar .scrollbar-handle-down.hover {
+.scrollbar-handle-down.hover {
     background: #666;
 }
+
+
 
 /* top-bottom prototype */
 
