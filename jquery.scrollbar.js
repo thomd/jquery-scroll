@@ -59,8 +59,8 @@
     //
     $.fn.scrollbar.defaults = {
         handleMinHeight: 30,         // min-height of handle (height is actually dependent on content height) 
-        scrollSpeed: 100,       // TODO
-        scrollStep: 10      // TODO
+        scrollSpeed: 100,            // TODO
+        scrollStep: 10               // TODO
     };
 
 
@@ -109,13 +109,6 @@
         //
         buildHtml: function(){
 
-            // set some necessary CSS attributes
-            var position = this.container.css('position') === 'absolute' ? 'absolute' : 'relative';
-            this.container.css({
-                'overflow': 'hidden', 
-                'position': position
-            });
-            
             // build some DOM nodes
             this.container.children().wrapAll('<div class="scrollbar-pane" />');
             this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>')
@@ -127,6 +120,33 @@
             this.handle =          this.container.find('.scrollbar-handle');
             this.handleContainer = this.container.find('.scrollbar-handle-container');
             this.handleArrows =    this.container.find('.scrollbar-handle-up, .scrollbar-handle-down');
+
+            // set some necessary CSS attributes
+            var position = this.container.css('position') === 'absolute' ? 'absolute' : 'relative';
+            this.container.css({
+                'overflow': 'hidden', 
+                'position': position
+            });
+            this.pane.css({
+                'position': 'absolute',
+                'overflow': 'visible',
+                'top':      0,
+                'height':   'auto'
+            });
+            this.handleContainer.css({
+                'position': 'absolute',
+                'top':      '20px',
+                'height':   '260px'
+            });
+            this.handle.css({
+                'position': 'absolute',
+                'top':      0,
+                'cursor':   'pointer'
+            });
+            this.handleArrows.css({
+                'position': 'absolute',
+                'cursor':   'pointer'
+            });
         },
 
 
