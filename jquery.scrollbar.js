@@ -110,8 +110,11 @@
         buildHtml: function(){
 
             // set some necessary CSS attributes
-            var position = this.container.css('position') == 'absolute' ? 'absolute' : 'relative';
-            this.container.css({'overflow': 'hidden', 'position': position});
+            var position = this.container.css('position') === 'absolute' ? 'absolute' : 'relative';
+            this.container.css({
+                'overflow': 'hidden', 
+                'position': position
+            });
             
             // build some DOM nodes
             this.container.children().wrapAll('<div class="scrollbar-pane" />');
@@ -217,17 +220,14 @@
             
             // calculate distance since last fireing of this handler
             var delta = mousePos - this.mouse.top;
-//console.log(delta);
             this.mouse.top = mousePos;
             
             // calculate new handle position
             this.handle.top += delta;
 
             // update positions
-            this.setHandlePosition(this.handle.top);
+            this.setHandlePosition();
             this.setContentPosition();
-            
-            
         },
 
 
@@ -250,7 +250,7 @@
         //
         // set position of handle
         //
-        setHandlePosition: function(delta){
+        setHandlePosition: function(){
             
             // stay within range [handleTop.min, handleTop.max]
             this.handle.top = (this.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.handle.top;
@@ -280,7 +280,7 @@
             // calculate new handle position
             this.handle.top -= delta;
 
-            this.setHandlePosition(this.handle.top);
+            this.setHandlePosition();
             this.setContentPosition();
         },
 
