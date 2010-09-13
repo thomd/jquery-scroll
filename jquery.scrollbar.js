@@ -126,8 +126,9 @@
             // set some necessary CSS attributes
             var position = this.container.css('position') === 'absolute' ? 'absolute' : 'relative';
             this.container.css({
-                'overflow': 'hidden', 
-                'position': position
+                'position': position,
+                'overflow': 'hidden',
+                'padding':  0 
             });
             this.pane.css({
                 'position': 'absolute',
@@ -138,9 +139,9 @@
             });
             this.handleContainer.css({
                 'position': 'absolute',
-                'top':      '20px',
+                'top':      this.handleArrowUp.height() + 'px',
                 'right':    0,
-                'height':   '260px'
+                'height':   (this.props.containerHeight - this.handleArrowUp.height() - this.handleArrowDown.height()) + 'px'
             });
             this.handle.css({
                 'position': 'absolute',
