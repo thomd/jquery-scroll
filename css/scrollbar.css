@@ -1,18 +1,15 @@
 /* these are the most necessary styles */
 
 .scrollbar-pane {
-    left: 0;
     margin-right: 20px;
 }
 
 .scrollbar-handle-container {
-    right: 0;
     background: #EEE;
     width: 20px;
 }
 
 .scrollbar-handle-container .scrollbar-handle {
-    right: 0;
     width: 20px;
     background: #999;
 }
@@ -26,8 +23,6 @@
 }
 
 .scrollbar-handle-up {
-    top: 0;
-    right: 0;
     width: 20px;
     height: 20px;
     background: #DDD;
@@ -38,8 +33,6 @@
 }
 
 .scrollbar-handle-down {
-    bottom: 0;
-    right: 0;
     width: 20px;
     height: 20px;
     background: #DDD;

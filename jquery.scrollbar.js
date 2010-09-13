@@ -120,6 +120,8 @@
             this.handle =          this.container.find('.scrollbar-handle');
             this.handleContainer = this.container.find('.scrollbar-handle-container');
             this.handleArrows =    this.container.find('.scrollbar-handle-up, .scrollbar-handle-down');
+            this.handleArrowUp =   this.container.find('.scrollbar-handle-up');
+            this.handleArrowDown = this.container.find('.scrollbar-handle-down');
 
             // set some necessary CSS attributes
             var position = this.container.css('position') === 'absolute' ? 'absolute' : 'relative';
@@ -131,21 +133,31 @@
                 'position': 'absolute',
                 'overflow': 'visible',
                 'top':      0,
+                'left':     0,
                 'height':   'auto'
             });
             this.handleContainer.css({
                 'position': 'absolute',
                 'top':      '20px',
+                'right':    0,
                 'height':   '260px'
             });
             this.handle.css({
                 'position': 'absolute',
                 'top':      0,
+                'right':    0,
                 'cursor':   'pointer'
             });
             this.handleArrows.css({
                 'position': 'absolute',
+                'right':    0,
                 'cursor':   'pointer'
+            });
+            this.handleArrowUp.css({
+                'top':      0
+            });
+            this.handleArrowDown.css({
+                'bottom':   0
             });
         },
 
