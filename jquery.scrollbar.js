@@ -197,8 +197,11 @@
         startOfHandleMove: function(ev){
             ev.preventDefault();
 
-            // set start top-position of mouse
-            this.mouse.top = this.mousePosition(ev);
+            // set start position of mouse
+            this.mouse.start = this.mousePosition(ev);
+
+            // set start position of handle
+            this.handle.start = this.handle.top;
             
             // bind mousemove- and mouseout-event to document (binding it to document allows having a mousepointer outside handle while moving)
     		$(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endOfHandleMove'));
@@ -216,14 +219,11 @@
         //
         onHandleMove: function(ev){
             
-            var mousePos = this.mousePosition(ev);
-            
             // calculate distance since last fireing of this handler
-            var delta = mousePos - this.mouse.top;
-            this.mouse.top = mousePos;
+            var distance = this.mousePosition(ev) - this.mouse.start;
             
             // calculate new handle position
-            this.handle.top += delta;
+            this.handle.top = this.handle.start + distance;
 
             // update positions
             this.setHandlePosition();
@@ -235,7 +235,7 @@
         // end moving of handle
         //
         endOfHandleMove: function(ev){
-            
+
             // remove handle events
     		$(document).unbind('.handle');
 
