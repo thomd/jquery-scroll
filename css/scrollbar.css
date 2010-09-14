@@ -52,44 +52,51 @@
 
 .simple .scrollbar-handle-container {
     background: #FFF;
-    top: 17px;
     width: 16px;
+}
+
+.simple .scrollbar-handle, .simple .scrollbar-handle-up, .simple .scrollbar-handle-down {
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAHCAYAAACcLcTKAAAAMklEQVR42mP4TwRgIBJQwwyGQWkZrR0+GDxPUO9gC2Gi3UNpqFArpIdFUh3UGZqY0gwAQe422HjkstgAAAAASUVORK5CYII=);
+	background-repeat: no-repeat;
 }
 
 .simple .scrollbar-handle {
     width: 15px;
     right: 1px;
-    background: #999;
+	background-color: #AAA;
+	background-position: -15px 50%;
 }
 
 .simple .scrollbar-handle.hover {
-    background: #666;
+    background-color: #666;
 }
 
 .simple .scrollbar-handle.move {
-    background: #111;
+    background-color: #111;
 }
 
 .simple .scrollbar-handle-up {
     width: 15px;
     height: 15px;
-    background: #DDD;
     border: 1px solid #FFF;
+    background-color: #AAA;
+	background-position: -33px 3px;
 }
 
 .simple .scrollbar-handle-up.hover {
-    background: #666;
+    background-color: #666;
 }
 
 .simple .scrollbar-handle-down {
     width: 15px;
     height: 15px;
-    background: #DDD;
     border: 1px solid #FFF;
+    background-color: #AAA;
+	background-position: 3px 5px;
 }
 
 .simple .scrollbar-handle-down.hover {
-    background: #666;
+    background-color: #666;
 }
 
 

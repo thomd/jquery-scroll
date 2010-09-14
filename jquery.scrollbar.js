@@ -47,6 +47,9 @@
             // do nothing and return if a scrollbar is not neccessary
             if(props.contentHeight <= props.containerHeight) return true;
             
+            // set options via class attributes
+            options.arrows = container.hasClass('no-arrows') ? false : true;
+            
             // create scrollbar
             var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
         });
@@ -58,9 +61,10 @@
     // default options
     //
     $.fn.scrollbar.defaults = {
+        arrows:          true,       // render up- / down-arrows
         handleMinHeight: 30,         // min-height of handle (height is actually dependent on content height) 
-        scrollSpeed: 100,            // TODO
-        scrollStep: 10               // TODO
+        scrollSpeed:     100,        // TODO
+        scrollStep:      10          // TODO
     };
 
 
@@ -115,7 +119,7 @@
             // build some DOM nodes
             this.container.children().wrapAll('<div class="scrollbar-pane" />');
             this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>');
-            this.container.append('<div class="scrollbar-handle-up" />').append('<div class="scrollbar-handle-down" />');
+            this.opts.arrows && this.container.append('<div class="scrollbar-handle-up" />').append('<div class="scrollbar-handle-down" />');
 
             // set scrollbar-object properties
             this.pane =            this.container.find('.scrollbar-pane');
@@ -134,7 +138,7 @@
                 'left':     0
             });
             this.handleContainer.defaultCss({
-                'top':      this.handleArrowUp.height(),
+                'top':      this.handleArrowUp.outerHeight(),
                 'right':    0
             });
             this.handle.defaultCss({
