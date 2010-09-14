@@ -107,13 +107,15 @@
         //          <div class="scrollbar-handle-down"></div>       --> this.handleArrows
         //      </div>
         //
+        //
+        // TODO: use detach-transform-attach or DOMfragment
+        //
         buildHtml: function(){
 
             // build some DOM nodes
             this.container.children().wrapAll('<div class="scrollbar-pane" />');
-            this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>')
-                          .append('<div class="scrollbar-handle-up" />')
-                          .append('<div class="scrollbar-handle-down" />');
+            this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>');
+            this.container.append('<div class="scrollbar-handle-up" />').append('<div class="scrollbar-handle-down" />');
 
             // set scrollbar-object properties
             this.pane =            this.container.find('.scrollbar-pane');
@@ -123,42 +125,53 @@
             this.handleArrowUp =   this.container.find('.scrollbar-handle-up');
             this.handleArrowDown = this.container.find('.scrollbar-handle-down');
 
-            // set some necessary CSS attributes
-            var position = this.container.css('position') === 'absolute' ? 'absolute' : 'relative';
-            this.container.css({
-                'position': position,
-                'overflow': 'hidden',
+            // set some optional CSS attributes (may be overwritten by css definitions)
+            this.container.defaultCss({
                 'padding':  0 
+            });
+            this.pane.defaultCss({
+                'top':      0,
+                'left':     0
+            });
+            this.handleContainer.defaultCss({
+                'top':      this.handleArrowUp.height(),
+                'right':    0
+            });
+            this.handle.defaultCss({
+                'top':      0,
+                'right':    0
+            });
+            this.handleArrows.defaultCss({
+                'right':    0,
+            });
+            this.handleArrowUp.defaultCss({
+                'top':      0
+            });
+            this.handleArrowDown.defaultCss({
+                'bottom':   0
+            });
+
+            // set some necessary CSS attributes
+            this.container.css({
+                'position': this.container.css('position') === 'absolute' ? 'absolute' : 'relative',
+                'overflow': 'hidden'
             });
             this.pane.css({
                 'position': 'absolute',
                 'overflow': 'visible',
-                'top':      0,
-                'left':     0,
                 'height':   'auto'
             });
             this.handleContainer.css({
                 'position': 'absolute',
-                'top':      this.handleArrowUp.height() + 'px',
-                'right':    0,
-                'height':   (this.props.containerHeight - this.handleArrowUp.height() - this.handleArrowDown.height()) + 'px'
+                'height':   (this.props.containerHeight - this.handleArrowUp.outerHeight() - this.handleArrowDown.outerHeight()) + 'px'
             });
             this.handle.css({
                 'position': 'absolute',
-                'top':      0,
-                'right':    0,
                 'cursor':   'pointer'
             });
             this.handleArrows.css({
                 'position': 'absolute',
-                'right':    0,
                 'cursor':   'pointer'
-            });
-            this.handleArrowUp.css({
-                'top':      0
-            });
-            this.handleArrowDown.css({
-                'bottom':   0
             });
         },
 
@@ -368,6 +381,33 @@
     };
 
 
+
+    // ----- default css ---------------------------------------------------------------------
+
+    $.fn.defaultCss = function(styles){
+
+        // 'not-defined'-values
+        notdef = {
+            'right':    'auto',
+            'left':     'auto',
+            'top':      'auto',
+            'bottom':   'auto',
+            'position': 'static',
+            'margin':   '',
+            'padding':  ''
+        };
+
+        // loop through all style definitions and check for a definition already set by css. 
+        // if no definition is found, apply the default css definition
+        return this.each(function(){
+            var elem = $(this);
+            for(style in styles){
+                if(elem.css(style) === notdef[style]){
+                    elem.css(style, styles[style]);
+                }
+            }
+        });
+    }
 
     // ----- mousewheel event ---------------------------------------------------------------------
     

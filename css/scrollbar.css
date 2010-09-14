@@ -9,16 +9,16 @@
     width: 20px;
 }
 
-.scrollbar-handle-container .scrollbar-handle {
+.scrollbar-handle {
     width: 20px;
     background: #999;
 }
 
-.scrollbar-handle-container .scrollbar-handle.hover {
+.scrollbar-handle.hover {
     background: #666;
 }
 
-.scrollbar-handle-container .scrollbar-handle.move {
+.scrollbar-handle.move {
     background: #111;
 }
 
@@ -39,6 +39,56 @@
 }
 
 .scrollbar-handle-down.hover {
+    background: #666;
+}
+
+
+
+/* simple theme */
+
+.simple .scrollbar-pane {
+    margin-right: 16px;
+}
+
+.simple .scrollbar-handle-container {
+    background: #FFF;
+    top: 17px;
+    width: 16px;
+}
+
+.simple .scrollbar-handle {
+    width: 15px;
+    right: 1px;
+    background: #999;
+}
+
+.simple .scrollbar-handle.hover {
+    background: #666;
+}
+
+.simple .scrollbar-handle.move {
+    background: #111;
+}
+
+.simple .scrollbar-handle-up {
+    width: 15px;
+    height: 15px;
+    background: #DDD;
+    border: 1px solid #FFF;
+}
+
+.simple .scrollbar-handle-up.hover {
+    background: #666;
+}
+
+.simple .scrollbar-handle-down {
+    width: 15px;
+    height: 15px;
+    background: #DDD;
+    border: 1px solid #FFF;
+}
+
+.simple .scrollbar-handle-down.hover {
     background: #666;
 }
 
