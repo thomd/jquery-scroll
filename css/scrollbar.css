@@ -101,6 +101,33 @@
 
 
 
+/* formidable theme */
+
+.formidable .scrollbar-pane {
+    margin-right: 12px;
+}
+
+.formidable .scrollbar-handle-container {
+    background: #EEE;
+    width: 12px;
+}
+
+.formidable .scrollbar-handle {
+    width: 12px;
+	background-color: #CCC;
+}
+
+.formidable .scrollbar-handle.hover {
+    background-color: #999;
+}
+
+.formidable .scrollbar-handle.move {
+    background-color: #666;
+}
+
+
+
+
 /* top-bottom prototype */
 
 .top-bottom.scrollbar {
