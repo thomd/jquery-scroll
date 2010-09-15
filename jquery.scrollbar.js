@@ -188,7 +188,7 @@
             // append drag-drop event on scrollbar-handle
             this.handle.bind('mousedown.handle', $.proxy(this, 'startOfHandleMove'));
             
-            // append click event on scrollbar-handle-container
+            // append mousedown event on scrollbar-handle-container
             this.handleContainer.bind('mousedown.handle', $.proxy(this, 'clickHandleContainer'));
             
             // append click event on scrollbar-up- and scrollbar-down-handles
@@ -254,11 +254,8 @@
             // set start position of handle
             this.handle.start = this.handle.top;
             
-            // bind mousemove- and mouseout-event to document (binding it to document allows having a mousepointer outside handle while moving)
+            // bind mousemove- and mouseout-event on document (binding it to document allows having a mousepointer outside handle while moving)
     		$(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endOfHandleMove'));
-    		
-            // remove hover event on scrollbar-arrows (until end of handle move)
-    		this.handleArrows.unbind('mouseenter mouseleave', this.hoverHandle);
     		
     		// add class for visual change while moving handle
             this.handle.addClass('move');
@@ -287,11 +284,8 @@
         //
         endOfHandleMove: function(ev){
 
-            // remove handle events
+            // remove handle events (which were attached in the startOfHandleMove-method)
     		$(document).unbind('.handle');
-
-            // re-attach hover event on scrollbar-arrows
-            this.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
 
             // remove class for visual change 
             this.handle.removeClass('move');
@@ -370,21 +364,20 @@
             // determine direction for handle movement
             var direction = $(ev.target).hasClass('scrollbar-handle-up') ? -1 : 1;
             
-            // repeat handle movement
-            var timer = setInterval($.proxy(function(){
-
-                // calculate and set new position of handle 
+            // calculate and set new position of handle/content
+            var moveHandle = function(){
                 this.handle.top = direction == 1 ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
                 this.handle[0].style.top = this.handle.top + 'px';
                 this.setContentPosition();
-            }, this), this.opts.scrollSpeed);
-    		
-            // append mouseup handler to track ending of mousedown
-    		var onMouseUpArrows = function(){
+            };
+
+            // repeat handle movement while mousedown
+            var timer = setInterval($.proxy(moveHandle, this), this.opts.scrollSpeed);
+
+            // stop handle movement on mouseup
+    		$(document).one('mouseup.arrows', function(){
     		    clearInterval(timer);
-        		$(document).unbind('mouseup.arrows', onMouseUpArrows);
-    		}
-    		$(document).bind('mouseup.arrows', onMouseUpArrows);
+    		});
         },
     };
 
