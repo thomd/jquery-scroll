@@ -33,7 +33,9 @@
         return this.each(function(i){
 
             var container = $(this), 
-                props = {};
+                props = {
+                    arrows: options.arrows
+                };
             
             // determine container height
             props.containerHeight = container.height();
@@ -47,9 +49,6 @@
             // do nothing and return if a scrollbar is not neccessary
             if(props.contentHeight <= props.containerHeight) return true;
             
-            // set options via class attributes
-            options.arrows = container.hasClass('no-arrows') ? false : true;
-            
             // create scrollbar
             var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
         });
@@ -61,10 +60,10 @@
     // default options
     //
     $.fn.scrollbar.defaults = {
-        arrows:          true,       // render up- / down-arrows
-        handleMinHeight: 30,         // min-height of handle (height is actually dependent on content height) 
-        scrollSpeed:     100,        // TODO
-        scrollStep:      10          // TODO
+        arrows:          true,       // render up- and down-arrows
+        handleMinHeight: 30,         // min-height of handle [px]
+        scrollSpeed:     50,         // speed of handle while mousedown on arrows [milli sec]
+        scrollStep:      5           // handle distance between two mousedowns on arrows [px]
     };
 
 
@@ -73,11 +72,16 @@
     // Scrollbar class properties
     //
     $.fn.scrollbar.Scrollbar = function(container, props, options){
+
+        // set object properties
         this.container = container;
         this.props =     props;
         this.opts =      options;
         this.mouse =     {};
         
+        // disable arrows via class attribute 'no-arrows' on a container
+        this.props.arrows = this.container.hasClass('no-arrows') ? false : this.props.arrows;
+
         // initialize
         this.buildHtml();
         this.initHandle();
@@ -119,7 +123,7 @@
             // build some DOM nodes
             this.container.children().wrapAll('<div class="scrollbar-pane" />');
             this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>');
-            this.opts.arrows && this.container.append('<div class="scrollbar-handle-up" />').append('<div class="scrollbar-handle-down" />');
+            this.props.arrows && this.container.append('<div class="scrollbar-handle-up" />').append('<div class="scrollbar-handle-down" />');
 
             // set scrollbar-object properties
             this.pane =            this.container.find('.scrollbar-pane');
@@ -485,4 +489,3 @@
     }
 
 })(jQuery);  // inject global jQuery object
-
