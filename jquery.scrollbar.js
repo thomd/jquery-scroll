@@ -185,12 +185,6 @@
         //
         appendEvents: function(){
             
-            // append hover event on scrollbar-handle
-            this.handle.bind('mouseenter mouseleave', this.hoverHandle);
-            
-            // append hover event on scrollbar-arrows
-            this.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
-            
             // append drag-drop event on scrollbar-handle
             this.handle.bind('mousedown.handle', $.proxy(this, 'startOfHandleMove'));
             
@@ -333,7 +327,7 @@
             this.setHandlePosition();
             this.setContentPosition();
             
-            // prevent default (scrolling of the entire document) only if handle is within [min, max]-range
+            // prevent default (scrolling of the entire document) if handle is within [min, max]-range
             if(this.handle.top > this.props.handleTop.min && this.handle.top < this.props.handleTop.max){
                 ev.preventDefault();
             }
@@ -374,19 +368,6 @@
     		}
     		$(document).bind('mouseup.arrows', clearTimer);
         },
-
-
-        //
-        // TODO: document!
-        // event handler for hovering the scrollbar-handle
-        //
-        hoverHandle: function(ev){
-            if(ev.type == 'mouseenter'){
-                $(this).addClass('hover');
-            } else {
-                $(this).removeClass('hover');
-            }
-        }
     };
 
 
