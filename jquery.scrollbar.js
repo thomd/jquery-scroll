@@ -192,7 +192,7 @@
             this.handleContainer.bind('mousedown.handle', $.proxy(this, 'clickHandleContainer'));
             
             // append click event on scrollbar-up- and scrollbar-down-handles
-            this.handleArrows.bind('mousedown.arrows', $.proxy(this, 'clickHandleArrows'));
+            this.handleArrows.bind('mousedown.arrows', $.proxy(this, 'onMousedownArrows'));
 
             // append mousewheel event on content container
             this.container.bind('mousewheel.container', $.proxy(this, 'onMouseWheel'));
@@ -213,14 +213,21 @@
             });
             this.props.contentHeight = contentHeight;
             
+            // set height of handle proportionally
             this.props.handleHeight = Math.max(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight, this.opts.handleMinHeight);
+            this.handle.height(this.props.handleHeight);
+            
+            // set min- and max-range for handle
             this.props.handleTop = {
                 min: 0,
                 max: this.props.handleContainerHeight - this.props.handleHeight
             };
-            this.handle.height(this.props.handleHeight);
-            this.handle.top = 0;
+
+            // set ratio of handle-container to content-container (to calculate position of content related to position of handle)
             this.handleContentRatio = (this.props.contentHeight - this.props.containerHeight) / (this.props.handleContainerHeight - this.props.handleHeight);
+
+            // set initial position of handle at top
+            this.handle.top = 0;
         },
 
 
@@ -335,38 +342,49 @@
 
 
         //
-        // TODO: document!
-        // append click handler on handle-container (to click up and down the handle) 
+        // append click handler on handle-container (outside of handle itself) to click up and down the handle 
         //
         clickHandleContainer: function(ev){
             ev.preventDefault();
+            
+            // do nothing if clicked on handle
             if(!$(ev.target).hasClass('scrollbar-handle-container')) return false;
             
+            // determine direction for handle movement (clicked above or below the handler?)
             var direction = (this.handle.offset().top < this.mousePosition(ev)) ? 1 : -1;
-            this.handle.start = this.handle.top = direction == 1 ? this.handle.top + (this.props.handleTop.max - this.handle.top) * 0.5 : this.handle.top - (this.handle.top - this.props.handleTop.min) * 0.5;
+            
+            // calculate and set new position of handle 
+            this.handle.top = direction == 1 ? this.handle.top + (this.props.handleTop.max - this.handle.top) * 0.5 : this.handle.top - (this.handle.top - this.props.handleTop.min) * 0.5;
             this.handle[0].style.top = this.handle.top + 'px';
+            
             this.setContentPosition();
         },
 
+
         //
-        // TODO: document!
-        // append click handler on handle-arrows
+        // append mousedown handler on handle-arrows
         //
-        clickHandleArrows: function(ev){
+        onMousedownArrows: function(ev){
             ev.preventDefault();
+            
+            // determine direction for handle movement
             var direction = $(ev.target).hasClass('scrollbar-handle-up') ? -1 : 1;
             
+            // repeat handle movement
             var timer = setInterval($.proxy(function(){
-                this.handle.start = this.handle.top = direction == 1 ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
+
+                // calculate and set new position of handle 
+                this.handle.top = direction == 1 ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
                 this.handle[0].style.top = this.handle.top + 'px';
                 this.setContentPosition();
             }, this), this.opts.scrollSpeed);
     		
-    		var clearTimer = function(){
+            // append mouseup handler to track ending of mousedown
+    		var onMouseUpArrows = function(){
     		    clearInterval(timer);
-        		$(document).unbind('mouseup.arrows', clearTimer);
+        		$(document).unbind('mouseup.arrows', onMouseUpArrows);
     		}
-    		$(document).bind('mouseup.arrows', clearTimer);
+    		$(document).bind('mouseup.arrows', onMouseUpArrows);
         },
     };
 
