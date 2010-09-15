@@ -200,7 +200,7 @@
             // append click event on scrollbar-up- and scrollbar-down-handles
             this.handleArrows.bind('mousedown.arrows', $.proxy(this, 'clickHandleArrows'));
 
-            // appen mousewheel event on content container
+            // append mousewheel event on content container
             this.container.bind('mousewheel.container', $.proxy(this, 'onMouseWheel'));
         },
 
@@ -332,6 +332,11 @@
 
             this.setHandlePosition();
             this.setContentPosition();
+            
+            // prevent default (scrolling of the entire document) only if handle is within [min, max]-range
+            if(this.handle.top > this.props.handleTop.min && this.handle.top < this.props.handleTop.max){
+                ev.preventDefault();
+            }
         },
 
 
