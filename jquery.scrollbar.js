@@ -1,3 +1,6 @@
+/*jslint eqeqeq: true, regexp: true */
+/*global document, window, setInterval, clearInterval, handler, jQuery */
+
 /*
  * Scrollbar - a jQuery plugin for custom scrollbars
  *
@@ -19,22 +22,22 @@
  *
  *
  */
-;(function($){
+(function($, document){
 
-    $.fn.scrollbar = function(options){
+    $.fn.scrollbar = function(opts){
 
         // Extend default options
-        var options = $.extend({}, $.fn.scrollbar.defaults, options);
+        var options = $.extend({}, $.fn.scrollbar.defaults, opts);
 
         
         //
         // append scrollbar to every found container and return jquery object for chainability
         //
-        return this.each(function(i){
+        return this.each(function(){
 
             var container = $(this), 
                 props = {};
-            
+
             // determine container height
             props.containerHeight = container.height();
 
@@ -45,15 +48,18 @@
             });
 
             // do nothing and return if a scrollbar is not neccessary
-            if(props.contentHeight <= props.containerHeight) return true;
+            if(props.contentHeight <= props.containerHeight){
+                return true;
+            }
             
             // set options via class attributes
             options.arrows = container.hasClass('no-arrows') ? false : true;
             
             // create scrollbar
             var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
+            return scrollbar;
         });
-    }
+    };
 
 
 
@@ -117,9 +123,11 @@
         buildHtml: function(){
 
             // build some DOM nodes
-            this.container.children().wrapAll('<div class="scrollbar-pane" />');
-            this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle" /></div>');
-            this.opts.arrows && this.container.append('<div class="scrollbar-handle-up" />').append('<div class="scrollbar-handle-down" />');
+            this.container.children().wrapAll('<div class="scrollbar-pane"/>');
+            this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle"/></div>');
+            if(this.opts.arrows){
+                this.container.append('<div class="scrollbar-handle-up"/>').append('<div class="scrollbar-handle-down"/>');
+            }
 
             // set scrollbar-object properties
             this.pane =            this.container.find('.scrollbar-pane');
@@ -146,7 +154,7 @@
                 'right':    0
             });
             this.handleArrows.defaultCss({
-                'right':    0,
+                'right':    0
             });
             this.handleArrowUp.defaultCss({
                 'top':      0
@@ -252,14 +260,14 @@
 
             // set start position of handle
             this.handle.start = this.handle.top;
-            
+
             // bind mousemove- and mouseout-event to document (binding it to document allows having a mousepointer outside handle while moving)
-    		$(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endOfHandleMove'));
-    		
+            $(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endOfHandleMove'));
+
             // remove hover event on scrollbar-arrows (until end of handle move)
-    		this.handleArrows.unbind('mouseenter mouseleave', this.hoverHandle);
-    		
-    		// add class for visual change while moving handle
+            this.handleArrows.unbind('mouseenter mouseleave', this.hoverHandle);
+
+            // add class for visual change while moving handle
             this.handle.addClass('move');
         },
 
@@ -287,7 +295,7 @@
         endOfHandleMove: function(ev){
 
             // remove handle events
-    		$(document).unbind('.handle');
+            $(document).unbind('.handle');
 
             // re-attach hover event on scrollbar-arrows
             this.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
@@ -341,10 +349,12 @@
         //
         clickHandleContainer: function(ev){
             ev.preventDefault();
-            if(!$(ev.target).hasClass('scrollbar-handle-container')) return false;
+            if(!$(ev.target).hasClass('scrollbar-handle-container')){
+                return false;
+            }
             
             var direction = (this.handle.offset().top < this.mousePosition(ev)) ? 1 : -1;
-            this.handle.start = this.handle.top = direction == 1 ? this.handle.top + (this.props.handleTop.max - this.handle.top) * 0.5 : this.handle.top - (this.handle.top - this.props.handleTop.min) * 0.5;
+            this.handle.start = this.handle.top = (direction === 1) ? this.handle.top + (this.props.handleTop.max - this.handle.top) * 0.5 : this.handle.top - (this.handle.top - this.props.handleTop.min) * 0.5;
             this.handle[0].style.top = this.handle.top + 'px';
             this.setContentPosition();
         },
@@ -358,16 +368,16 @@
             var direction = $(ev.target).hasClass('scrollbar-handle-up') ? -1 : 1;
             
             var timer = setInterval($.proxy(function(){
-                this.handle.start = this.handle.top = direction == 1 ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
+                this.handle.start = this.handle.top = (direction === 1) ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
                 this.handle[0].style.top = this.handle.top + 'px';
                 this.setContentPosition();
             }, this), this.opts.scrollSpeed);
-    		
-    		var clearTimer = function(){
-    		    clearInterval(timer);
-        		$(document).unbind('mouseup.arrows', clearTimer);
-    		}
-    		$(document).bind('mouseup.arrows', clearTimer);
+
+            var clearTimer = function(){
+                clearInterval(timer);
+                $(document).unbind('mouseup.arrows', clearTimer);
+            };
+            $(document).bind('mouseup.arrows', clearTimer);
         },
 
 
@@ -376,7 +386,7 @@
         // event handler for hovering the scrollbar-handle
         //
         hoverHandle: function(ev){
-            if(ev.type == 'mouseenter'){
+            if(ev.type === 'mouseenter'){
                 $(this).addClass('hover');
             } else {
                 $(this).removeClass('hover');
@@ -391,7 +401,7 @@
     $.fn.defaultCss = function(styles){
 
         // 'not-defined'-values
-        notdef = {
+        var notdef = {
             'right':    'auto',
             'left':     'auto',
             'top':      'auto',
@@ -405,31 +415,31 @@
         // if no definition is found, apply the default css definition
         return this.each(function(){
             var elem = $(this);
-            for(style in styles){
+            for(var style in styles){
                 if(elem.css(style) === notdef[style]){
                     elem.css(style, styles[style]);
                 }
             }
         });
-    }
+    };
 
     // ----- mousewheel event ---------------------------------------------------------------------
-    
+
     $.event.special.mousewheel = {
-    
+
         setup: function(){
             if (this.addEventListener){
-                this.addEventListener('mousewheel', handler, false);
-                this.addEventListener('DOMMouseScroll', handler, false);
+                this.addEventListener('mousewheel', $.fn.scrollbar.mouseWheelHandler, false);
+                this.addEventListener('DOMMouseScroll', $.fn.scrollbar.mouseWheelHandler, false);
             } else {
-                this.onmousewheel = handler;
+                this.onmousewheel = $.fn.scrollbar.mouseWheelHandler;
             }
         },
-    
+
         teardown: function(){
             if (this.removeEventListener){
-                this.removeEventListener('mousewheel', handler, false);
-                this.removeEventListener('DOMMouseScroll', handler, false);
+                this.removeEventListener('mousewheel', $.fn.scrollbar.mouseWheelHandler, false);
+                this.removeEventListener('DOMMouseScroll', $.fn.scrollbar.mouseWheelHandler, false);
             } else {
                 this.onmousewheel = null;
             }
@@ -441,24 +451,24 @@
         mousewheel: function(fn){
             return fn ? this.bind("mousewheel", fn) : this.trigger("mousewheel");
         },
-    
+
         unmousewheel: function(fn){
             return this.unbind("mousewheel", fn);
         }
     });
 
 
-    function handler(event) {
-        var orgEvent = event || window.event, 
-            args = [].slice.call(arguments, 1), 
-            delta = 0, 
-            returnValue = true, 
-            deltaX = 0, 
+    $.fn.scrollbar.mouseWheelHandler = function(event) {
+        var orgEvent = event || window.event,
+            args = [].slice.call(arguments, 1),
+            delta = 0,
+            returnValue = true,
+            deltaX = 0,
             deltaY = 0;
-            
+
         event = $.event.fix(orgEvent);
         event.type = "mousewheel";
-    
+
         // Old school scrollwheel delta
         if(event.wheelDelta){
             delta = event.wheelDelta / 120;
@@ -466,13 +476,13 @@
         if(event.detail){
             delta = -event.detail / 3;
         }
-    
+
         // Gecko
         if(orgEvent.axis !== undefined && orgEvent.axis === orgEvent.HORIZONTAL_AXIS){
             deltaY = 0;
             deltaX = -1 * delta;
         }
-    
+
         // Webkit
         if(orgEvent.wheelDeltaY !== undefined){
             deltaY = orgEvent.wheelDeltaY / 120;
@@ -480,12 +490,12 @@
         if(orgEvent.wheelDeltaX !== undefined){
             deltaX = -1 * orgEvent.wheelDeltaX / 120;
         }
-    
+
         // Add event and delta to the front of the arguments
         args.unshift(event, delta, deltaX, deltaY);
-    
-        return $.event.handle.apply(this, args);
-    }
 
-})(jQuery);  // inject global jQuery object
+        return $.event.handle.apply(this, args);
+    };
+
+})(jQuery, document);  // inject global jQuery object
 
