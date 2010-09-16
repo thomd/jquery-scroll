@@ -36,7 +36,9 @@
         return this.each(function(){
 
             var container = $(this), 
-                props = {};
+                props = {
+                    arrows: options.arrows
+                };
 
             // determine container height
             props.containerHeight = container.height();
@@ -51,10 +53,7 @@
             if(props.contentHeight <= props.containerHeight){
                 return true;
             }
-            
-            // set options via class attributes
-            options.arrows = container.hasClass('no-arrows') ? false : true;
-            
+
             // create scrollbar
             var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
             return scrollbar;
@@ -67,10 +66,10 @@
     // default options
     //
     $.fn.scrollbar.defaults = {
-        arrows:          true,       // render up- / down-arrows
-        handleMinHeight: 30,         // min-height of handle (height is actually dependent on content height) 
-        scrollSpeed:     100,        // TODO
-        scrollStep:      10          // TODO
+        arrows:          true,       // render up- and down-arrows
+        handleMinHeight: 30,         // min-height of handle [px]
+        scrollSpeed:     50,         // speed of handle while mousedown on arrows [milli sec]
+        scrollStep:      5           // handle distance between two mousedowns on arrows [px]
     };
 
 
@@ -79,22 +78,27 @@
     // Scrollbar class properties
     //
     $.fn.scrollbar.Scrollbar = function(container, props, options){
+
+        // set object properties
         this.container = container;
         this.props =     props;
         this.opts =      options;
         this.mouse =     {};
-        
+
+        // disable arrows via class attribute 'no-arrows' on a container
+        this.props.arrows = this.container.hasClass('no-arrows') ? false : this.props.arrows;
+
         // initialize
         this.buildHtml();
         this.initHandle();
         this.appendEvents();
     };
-    
+
     //
     // Scrollbar class methods
     //
     $.fn.scrollbar.Scrollbar.prototype = {
-        
+
         //
         // build DOM nodes for pane and scroll-handle
         //
@@ -125,7 +129,7 @@
             // build some DOM nodes
             this.container.children().wrapAll('<div class="scrollbar-pane"/>');
             this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle"/></div>');
-            if(this.opts.arrows){
+            if(this.props.arrows){
                 this.container.append('<div class="scrollbar-handle-up"/>').append('<div class="scrollbar-handle-down"/>');
             }
 
@@ -192,23 +196,17 @@
         // append events on handle and handle-container
         //
         appendEvents: function(){
-            
-            // append hover event on scrollbar-handle
-            this.handle.bind('mouseenter mouseleave', this.hoverHandle);
-            
-            // append hover event on scrollbar-arrows
-            this.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
-            
+
             // append drag-drop event on scrollbar-handle
             this.handle.bind('mousedown.handle', $.proxy(this, 'startOfHandleMove'));
-            
-            // append click event on scrollbar-handle-container
-            this.handleContainer.bind('mousedown.handle', $.proxy(this, 'clickHandleContainer'));
-            
-            // append click event on scrollbar-up- and scrollbar-down-handles
-            this.handleArrows.bind('mousedown.arrows', $.proxy(this, 'clickHandleArrows'));
 
-            // appen mousewheel event on content container
+            // append mousedown event on scrollbar-handle-container
+            this.handleContainer.bind('mousedown.handle', $.proxy(this, 'clickHandleContainer'));
+
+            // append click event on scrollbar-up- and scrollbar-down-handles
+            this.handleArrows.bind('mousedown.arrows', $.proxy(this, 'onMousedownArrows'));
+
+            // append mousewheel event on content container
             this.container.bind('mousewheel.container', $.proxy(this, 'onMouseWheel'));
         },
 
@@ -219,22 +217,29 @@
         //
         initHandle: function(){
             this.props.handleContainerHeight = this.handleContainer.height();
-            
+
             // we need to calculate content-height again: due to the added scrollbar, the width decreased - hence the height increased!
             var contentHeight = 0;
             this.pane.children().each(function(){
                 contentHeight += $(this).outerHeight();
             });
             this.props.contentHeight = contentHeight;
-            
+
+            // set height of handle proportionally
             this.props.handleHeight = Math.max(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight, this.opts.handleMinHeight);
+            this.handle.height(this.props.handleHeight);
+
+            // set min- and max-range for handle
             this.props.handleTop = {
                 min: 0,
                 max: this.props.handleContainerHeight - this.props.handleHeight
             };
-            this.handle.height(this.props.handleHeight);
-            this.handle.top = 0;
+
+            // set ratio of handle-container to content-container (to calculate position of content related to position of handle)
             this.handleContentRatio = (this.props.contentHeight - this.props.containerHeight) / (this.props.handleContainerHeight - this.props.handleHeight);
+
+            // set initial position of handle at top
+            this.handle.top = 0;
         },
 
 
@@ -242,8 +247,8 @@
         // get mouse position helper
         //
         mousePosition: function(ev) {
-			return ev.pageY || (ev.clientY + (document.documentElement.scrollTop || document.body.scrollTop)) || 0;
-		},
+            return ev.pageY || (ev.clientY + (document.documentElement.scrollTop || document.body.scrollTop)) || 0;
+        },
 
 
 
@@ -261,11 +266,8 @@
             // set start position of handle
             this.handle.start = this.handle.top;
 
-            // bind mousemove- and mouseout-event to document (binding it to document allows having a mousepointer outside handle while moving)
+            // bind mousemove- and mouseout-event on document (binding it to document allows having a mousepointer outside handle while moving)
             $(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endOfHandleMove'));
-
-            // remove hover event on scrollbar-arrows (until end of handle move)
-            this.handleArrows.unbind('mouseenter mouseleave', this.hoverHandle);
 
             // add class for visual change while moving handle
             this.handle.addClass('move');
@@ -276,10 +278,10 @@
         // on moving of handle
         //
         onHandleMove: function(ev){
-            
+
             // calculate distance since last fireing of this handler
             var distance = this.mousePosition(ev) - this.mouse.start;
-            
+
             // calculate new handle position
             this.handle.top = this.handle.start + distance;
 
@@ -294,22 +296,19 @@
         //
         endOfHandleMove: function(ev){
 
-            // remove handle events
+            // remove handle events (which were attached in the startOfHandleMove-method)
             $(document).unbind('.handle');
-
-            // re-attach hover event on scrollbar-arrows
-            this.handleArrows.bind('mouseenter mouseleave', this.hoverHandle);
 
             // remove class for visual change 
             this.handle.removeClass('move');
         },
-        
+
 
         //
         // set position of handle
         //
         setHandlePosition: function(){
-            
+
             // stay within range [handleTop.min, handleTop.max]
             this.handle.top = (this.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.handle.top;
             this.handle.top = (this.handle.top < this.props.handleTop.min) ? this.props.handleTop.min : this.handle.top;
@@ -322,10 +321,10 @@
         // set position of content
         //
         setContentPosition: function(){
-            
+
             // derive position of content from position of handle 
             this.pane.top = -1 * this.handleContentRatio * this.handle.top;
-            
+
             this.pane[0].style.top = this.pane.top + 'px';
         },
 
@@ -340,58 +339,59 @@
 
             this.setHandlePosition();
             this.setContentPosition();
+
+            // prevent default scrolling of the entire document if handle is within [min, max]-range
+            if(this.handle.top > this.props.handleTop.min && this.handle.top < this.props.handleTop.max){
+                ev.preventDefault();
+            }
         },
 
 
         //
-        // TODO: document!
-        // append click handler on handle-container (to click up and down the handle) 
+        // append click handler on handle-container (outside of handle itself) to click up and down the handle 
         //
         clickHandleContainer: function(ev){
             ev.preventDefault();
+
+            // do nothing if clicked on handle
             if(!$(ev.target).hasClass('scrollbar-handle-container')){
                 return false;
             }
-            
+
+            // determine direction for handle movement (clicked above or below the handler?)
             var direction = (this.handle.offset().top < this.mousePosition(ev)) ? 1 : -1;
-            this.handle.start = this.handle.top = (direction === 1) ? this.handle.top + (this.props.handleTop.max - this.handle.top) * 0.5 : this.handle.top - (this.handle.top - this.props.handleTop.min) * 0.5;
+            this.handle.top = (direction === 1) ? this.handle.top + (this.props.handleTop.max - this.handle.top) * 0.5 : this.handle.top - (this.handle.top - this.props.handleTop.min) * 0.5;
             this.handle[0].style.top = this.handle.top + 'px';
+
             this.setContentPosition();
         },
 
+
         //
-        // TODO: document!
-        // append click handler on handle-arrows
+        // append mousedown handler on handle-arrows
         //
-        clickHandleArrows: function(ev){
+        onMousedownArrows: function(ev){
             ev.preventDefault();
+
+            // determine direction for handle movement
             var direction = $(ev.target).hasClass('scrollbar-handle-up') ? -1 : 1;
-            
-            var timer = setInterval($.proxy(function(){
-                this.handle.start = this.handle.top = (direction === 1) ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
+
+            // calculate and set new position of handle/content
+            var moveHandle = function(){
+                this.handle.top = (direction === 1) ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
                 this.handle[0].style.top = this.handle.top + 'px';
+                
                 this.setContentPosition();
-            }, this), this.opts.scrollSpeed);
-
-            var clearTimer = function(){
-                clearInterval(timer);
-                $(document).unbind('mouseup.arrows', clearTimer);
             };
-            $(document).bind('mouseup.arrows', clearTimer);
+
+            // repeat handle movement while mousedown
+            var timer = setInterval($.proxy(moveHandle, this), this.opts.scrollSpeed);
+
+            // stop handle movement on mouseup
+            $(document).one('mouseup.arrows', function(){
+                clearInterval(timer);
+            });
         },
-
-
-        //
-        // TODO: document!
-        // event handler for hovering the scrollbar-handle
-        //
-        hoverHandle: function(ev){
-            if(ev.type === 'mouseenter'){
-                $(this).addClass('hover');
-            } else {
-                $(this).removeClass('hover');
-            }
-        }
     };
 
 
@@ -496,6 +496,4 @@
 
         return $.event.handle.apply(this, args);
     };
-
 })(jQuery, document);  // inject global jQuery object
-

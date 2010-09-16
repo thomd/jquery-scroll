@@ -14,7 +14,7 @@
     background: #999;
 }
 
-.scrollbar-handle.hover {
+.scrollbar-handle:hover {
     background: #666;
 }
 
@@ -28,7 +28,7 @@
     background: #DDD;
 }
 
-.scrollbar-handle-up.hover {
+.scrollbar-handle-up:hover {
     background: #666;
 }
 
@@ -38,7 +38,7 @@
     background: #DDD;
 }
 
-.scrollbar-handle-down.hover {
+.scrollbar-handle-down:hover {
     background: #666;
 }
 
@@ -51,7 +51,7 @@
 }
 
 .simple .scrollbar-handle-container {
-    background: #FFF;
+    background: #EEE;
     width: 16px;
 }
 
@@ -67,7 +67,7 @@
 	background-position: -15px 50%;
 }
 
-.simple .scrollbar-handle.hover {
+.simple .scrollbar-handle:hover {
     background-color: #666;
 }
 
@@ -83,7 +83,7 @@
 	background-position: -33px 3px;
 }
 
-.simple .scrollbar-handle-up.hover {
+.simple .scrollbar-handle-up:hover {
     background-color: #666;
 }
 
@@ -95,7 +95,7 @@
 	background-position: 3px 5px;
 }
 
-.simple .scrollbar-handle-down.hover {
+.simple .scrollbar-handle-down:hover {
     background-color: #666;
 }
 
@@ -117,7 +117,7 @@
 	background-color: #CCC;
 }
 
-.formidable .scrollbar-handle.hover {
+.formidable .scrollbar-handle:hover {
     background-color: #999;
 }
 
