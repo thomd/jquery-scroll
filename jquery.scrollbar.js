@@ -142,9 +142,6 @@
             this.handleArrowDown = this.container.find('.scrollbar-handle-down');
 
             // set some optional CSS attributes (may be overwritten by css definitions)
-            this.container.defaultCss({
-                'padding':  0 
-            });
             this.pane.defaultCss({
                 'top':      0,
                 'left':     0
@@ -333,7 +330,7 @@
         // mouse wheel movement
         //
         onMouseWheel: function(ev, delta){
-console.log(delta);
+
             // calculate new handle position
             this.handle.top -= delta;
 
@@ -406,9 +403,7 @@ console.log(delta);
             'left':     'auto',
             'top':      'auto',
             'bottom':   'auto',
-            'position': 'static',
-            'margin':   '',
-            'padding':  ''
+            'position': 'static'
         };
 
         // loop through all style definitions and check for a definition already set by css. 
