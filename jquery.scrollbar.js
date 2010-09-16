@@ -333,7 +333,7 @@
         // mouse wheel movement
         //
         onMouseWheel: function(ev, delta){
-
+console.log(delta);
             // calculate new handle position
             this.handle.top -= delta;
 
@@ -423,7 +423,10 @@
         });
     };
 
+    //
     // ----- mousewheel event ---------------------------------------------------------------------
+    // based on jquery.mousewheel.js from Brandon Aaron (brandon.aaron@gmail.com || http://brandonaaron.net)
+    //
 
     $.event.special.mousewheel = {
 
