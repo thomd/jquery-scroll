@@ -256,6 +256,7 @@
         //
         startOfHandleMove: function(ev){
             ev.preventDefault();
+            ev.stopPropagation();
 
             // set start position of mouse
             this.mouse.start = this.mousePosition(ev);
