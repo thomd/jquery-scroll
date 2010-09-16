@@ -391,7 +391,7 @@ console.log(delta);
             $(document).one('mouseup.arrows', function(){
                 clearInterval(timer);
             });
-        },
+        }
     };
 
 
