@@ -52,7 +52,11 @@
 
 .simple .scrollbar-handle-container {
     background: #EEE;
-    width: 16px;
+    width: 15px;
+}
+
+.simple .scrollbar-handle-container:hover {
+    background: #E6E6E6;
 }
 
 .simple .scrollbar-handle, .simple .scrollbar-handle-up, .simple .scrollbar-handle-down {
@@ -61,47 +65,62 @@
 }
 
 .simple .scrollbar-handle {
-    width: 15px;
-    right: 1px;
-	background-color: #AAA;
-	background-position: -15px 50%;
+    width: 13px;
+    border: 1px solid #CCC;
+	background-color: #CCC;
+	background-position: -16px 50%;
 }
 
 .simple .scrollbar-handle:hover {
-    background-color: #666;
+    border: 1px solid #666;
 }
 
 .simple .scrollbar-handle.move {
-    background-color: #111;
+    border: 1px solid #666;
+    background-color: #999;
 }
 
 .simple .scrollbar-handle-up {
-    width: 15px;
-    height: 15px;
-    border: 1px solid #FFF;
-    background-color: #AAA;
-	background-position: -33px 3px;
+    width: 13px;
+    height: 13px;
+    border: 1px solid #CCC;
+    background-color: #CCC;
+	background-position: -34px 2px;
+	margin-bottom: 1px;
 }
 
 .simple .scrollbar-handle-up:hover {
-    background-color: #666;
+    border: 1px solid #666;
+}
+
+.simple .scrollbar-handle-up.move {
+    background-color: #999;
 }
 
 .simple .scrollbar-handle-down {
-    width: 15px;
-    height: 15px;
-    border: 1px solid #FFF;
-    background-color: #AAA;
-	background-position: 3px 5px;
+    width: 13px;
+    height: 13px;
+    border: 1px solid #CCC;
+    background-color: #CCC;
+	background-position: 2px 4px;
+	margin-top: 1px;
 }
 
 .simple .scrollbar-handle-down:hover {
-    background-color: #666;
+    border: 1px solid #666;
+}
+
+.simple .scrollbar-handle-down.move {
+    background-color: #999;
 }
 
 
 
 /* formidable theme */
+
+.css-scrollbar.formidable {
+    padding: 0;
+}
 
 .formidable .scrollbar-pane {
     margin-right: 12px;

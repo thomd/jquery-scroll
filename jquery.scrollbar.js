@@ -147,7 +147,7 @@
                 'left':     0
             });
             this.handleContainer.defaultCss({
-                'top':      this.handleArrowUp.outerHeight(),
+                'top':      this.handleArrowUp.outerHeight(true),
                 'right':    0
             });
             this.handle.defaultCss({
@@ -176,7 +176,7 @@
             });
             this.handleContainer.css({
                 'position': 'absolute',
-                'height':   (this.props.containerHeight - this.handleArrowUp.outerHeight() - this.handleArrowDown.outerHeight()) + 'px'
+                'height':   (this.props.containerHeight - this.handleArrowUp.outerHeight(true) - this.handleArrowDown.outerHeight(true)) + 'px'
             });
             this.handle.css({
                 'position': 'absolute',
@@ -209,8 +209,7 @@
 
 
         //
-        // calculate height of handle.
-        // height of handle should indicate height of content.
+        // calculate height of handle (height of handle should indicate height of content related to content-container).
         //
         initHandle: function(){
             this.props.handleContainerHeight = this.handleContainer.height();
@@ -218,13 +217,15 @@
             // we need to calculate content-height again: due to the added scrollbar, the width decreased - hence the height increased!
             var contentHeight = 0;
             this.pane.children().each(function(){
-                contentHeight += $(this).outerHeight();
+                contentHeight += $(this).outerHeight(true);
             });
             this.props.contentHeight = contentHeight;
 
             // set height of handle proportionally
             this.props.handleHeight = Math.max(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight, this.opts.handleMinHeight);
+
             this.handle.height(this.props.handleHeight);
+            this.handle.height(2 * this.handle.height() - this.handle.outerHeight(true));  // this is sort of setting outerHeight
 
             // set min- and max-range for handle
             this.props.handleTop = {
@@ -233,7 +234,7 @@
             };
 
             // set ratio of handle-container to content-container (to calculate position of content related to position of handle)
-            this.handleContentRatio = (this.props.contentHeight - this.props.containerHeight) / (this.props.handleContainerHeight - this.props.handleHeight);
+            this.props.handleContentRatio = (this.props.contentHeight - this.props.containerHeight) / (this.props.handleContainerHeight - this.props.handleHeight);
 
             // set initial position of handle at top
             this.handle.top = 0;
@@ -321,7 +322,7 @@
         setContentPosition: function(){
 
             // derive position of content from position of handle 
-            this.pane.top = -1 * this.handleContentRatio * this.handle.top;
+            this.pane.top = -1 * this.props.handleContentRatio * this.handle.top;
 
             this.pane[0].style.top = this.pane.top + 'px';
         },
@@ -374,6 +375,9 @@
             // determine direction for handle movement
             var direction = $(ev.target).hasClass('scrollbar-handle-up') ? -1 : 1;
 
+            // add class for visual change while moving handle
+            $(ev.target).addClass('move');
+
             // calculate and set new position of handle/content
             var moveHandle = function(){
                 this.handle.top = (direction === 1) ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
@@ -388,6 +392,7 @@
             // stop handle movement on mouseup
             $(document).one('mouseup.arrows', function(){
                 clearInterval(timer);
+                $(ev.target).removeClass('move');
             });
         }
     };
