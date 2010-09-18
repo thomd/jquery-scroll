@@ -205,6 +205,9 @@
 
             // append mousewheel event on content container
             this.container.bind('mousewheel.container', $.proxy(this, 'onMouseWheel'));
+
+            // append hover event on content container
+            this.container.bind('mouseenter.container mouseleave.container', $.proxy(this, 'onContentHover'));
         },
 
 
@@ -270,6 +273,7 @@
 
             // add class for visual change while moving handle
             this.handle.addClass('move');
+            this.handleContainer.addClass('move');
         },
 
 
@@ -300,6 +304,7 @@
 
             // remove class for visual change 
             this.handle.removeClass('move');
+            this.handleContainer.removeClass('move');
         },
 
 
@@ -394,6 +399,20 @@
                 clearInterval(timer);
                 $(ev.target).removeClass('move');
             });
+        },
+        
+        
+        //
+        // add class attribute on content while interacting with content
+        //
+        onContentHover: function(ev){
+            if(ev.type === 'mouseenter'){
+                this.container.addClass('hover');
+                this.handleContainer.addClass('hover');
+            } else {
+                this.container.removeClass('hover');
+                this.handleContainer.removeClass('hover');
+            }
         }
     };
 

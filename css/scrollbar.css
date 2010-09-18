@@ -55,7 +55,8 @@
     width: 15px;
 }
 
-.simple .scrollbar-handle-container:hover {
+.simple .scrollbar-handle-container.hover,
+.simple .scrollbar-handle-container.move {
     background: #E6E6E6;
 }
 
