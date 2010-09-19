@@ -141,13 +141,12 @@
             this.handleArrowUp =   this.container.find('.scrollbar-handle-up');
             this.handleArrowDown = this.container.find('.scrollbar-handle-down');
 
-            // set some optional CSS attributes (may be overwritten by css definitions)
+            // set some default CSS attributes (may be overwritten by CSS definitions)
             this.pane.defaultCss({
                 'top':      0,
                 'left':     0
             });
             this.handleContainer.defaultCss({
-                'top':      this.handleArrowUp.outerHeight(true),
                 'right':    0
             });
             this.handle.defaultCss({
@@ -164,7 +163,7 @@
                 'bottom':   0
             });
 
-            // set some necessary CSS attributes
+            // set some necessary CSS attributes (can NOT be overwritten by CSS definitions)
             this.container.css({
                 'position': this.container.css('position') === 'absolute' ? 'absolute' : 'relative',
                 'overflow': 'hidden'
@@ -176,6 +175,7 @@
             });
             this.handleContainer.css({
                 'position': 'absolute',
+                'top':      this.handleArrowUp.outerHeight(true),
                 'height':   (this.props.containerHeight - this.handleArrowUp.outerHeight(true) - this.handleArrowDown.outerHeight(true)) + 'px'
             });
             this.handle.css({
