@@ -145,39 +145,3 @@
     background-color: #666;
 }
 
-
-
-
-/* top-bottom prototype */
-
-.top-bottom.scrollbar {
-    position: relative;
-}
-
-.top-bottom.scrollbar .scrollbar-pane {
-    position: absolute;
-    overflow: visible;
-    top: 0;
-    left: 0;
-    height: auto;
-}
-
-.top-bottom.scrollbar .scrollbar-handle-up {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 250px;
-    height: 20px;
-    background: #DDD;
-    opacity: 0.7;
-}
-
-.top-bottom.scrollbar .scrollbar-handle-down {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 250px;
-    height: 20px;
-    background: #DDD;
-    opacity: 0.7;
-}
