@@ -66,10 +66,14 @@
     // default options
     //
     $.fn.scrollbar.defaults = {
-        arrows:          true,       // render up- and down-arrows
-        handleMinHeight: 30,         // min-height of handle [px]
-        scrollSpeed:     50,         // speed of handle while mousedown on arrows [milli sec]
-        scrollStep:      5           // handle distance between two mousedowns on arrows [px]
+        arrows:            true,       // render up- and down-arrows
+        handleMinHeight:   30,         // min-height of handle [px]
+        
+        scrollSpeed:       50,         // speed of handle while mousedown on arrows [milli sec]
+        scrollStep:        20,         // handle increment between two mousedowns on arrows [px]
+        
+        scrollSpeedArrows: 40,         // speed of handle while mousedown within the handle container [milli sec]
+        scrollStepArrows:  3           // handle increment between two mousedowns within the handle container [px]
     };
 
 
@@ -363,11 +367,23 @@
             }
 
             // determine direction for handle movement (clicked above or below the handler?)
-            var direction = (this.handle.offset().top < this.mousePosition(ev)) ? 1 : -1;
-            this.handle.top = (direction === 1) ? this.handle.top + (this.props.handleTop.max - this.handle.top) * 0.5 : this.handle.top - (this.handle.top - this.props.handleTop.min) * 0.5;
-            this.handle[0].style.top = this.handle.top + 'px';
+            this.handle.direction = (this.handle.offset().top < this.mousePosition(ev)) ? 1 : -1;
 
-            this.setContentPosition();
+            // set incremental step of handle
+            this.handle.step = this.opts.scrollStep;
+
+            // repeat handle movement while mousedown
+            var timer = setInterval($.proxy(this.moveHandle, this), this.opts.scrollSpeed);
+
+            // stop handle movement on mouseup
+            $(document).one('mouseup.handlecontainer', function(){
+                clearInterval(timer);
+            });
+
+            // stop handle movement when mouse is over handle
+            this.handle.one('mouseover.handlecontainer', function(){
+                clearInterval(timer);
+            });
         },
 
 
@@ -378,27 +394,33 @@
             ev.preventDefault();
 
             // determine direction for handle movement
-            var direction = $(ev.target).hasClass('scrollbar-handle-up') ? -1 : 1;
+            this.handle.direction = $(ev.target).hasClass('scrollbar-handle-up') ? -1 : 1;
+
+            // set incremental step of handle
+            this.handle.step = this.opts.scrollStepArrows;
 
             // add class for visual change while moving handle
             $(ev.target).addClass('move');
 
-            // calculate and set new position of handle/content
-            var moveHandle = function(){
-                this.handle.top = (direction === 1) ? Math.min(this.handle.top + this.opts.scrollStep, this.props.handleTop.max) : Math.max(this.handle.top - this.opts.scrollStep, this.props.handleTop.min);
-                this.handle[0].style.top = this.handle.top + 'px';
-                
-                this.setContentPosition();
-            };
-
             // repeat handle movement while mousedown
-            var timer = setInterval($.proxy(moveHandle, this), this.opts.scrollSpeed);
+            var timer = setInterval($.proxy(this.moveHandle, this), this.opts.scrollSpeedArrows);
 
             // stop handle movement on mouseup
             $(document).one('mouseup.arrows', function(){
                 clearInterval(timer);
                 $(ev.target).removeClass('move');
             });
+        },
+        
+        
+        //
+        // move handle by a distinct step while click on arrows or handle-container 
+        //
+        moveHandle: function(){
+            this.handle.top = (this.handle.direction === 1) ? Math.min(this.handle.top + this.handle.step, this.props.handleTop.max) : Math.max(this.handle.top - this.handle.step, this.props.handleTop.min);
+            this.handle[0].style.top = this.handle.top + 'px';
+
+            this.setContentPosition();
         },
         
         
