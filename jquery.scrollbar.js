@@ -281,6 +281,7 @@
         // on moving of handle
         //
         onHandleMove: function(ev){
+            ev.preventDefault();
 
             // calculate distance since last fireing of this handler
             var distance = this.mousePosition(ev) - this.mouse.start;
