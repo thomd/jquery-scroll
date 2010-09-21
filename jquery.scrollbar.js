@@ -40,6 +40,11 @@
                     arrows: options.arrows
                 };
 
+            // set new container height if explicitly set by an option
+            if(options.containerHeight){
+                container.height(options.containerHeight);
+            }
+
             // determine container height
             props.containerHeight = container.height();
 
@@ -66,6 +71,8 @@
     // default options
     //
     $.fn.scrollbar.defaults = {
+        containerHeight:   null,       // height of content container. If set to null, the current height before DOM manipulation is used
+        
         arrows:            true,       // render up- and down-arrows
         handleMinHeight:   30,         // min-height of handle [px]
         
@@ -137,6 +144,9 @@
                 this.container.append('<div class="scrollbar-handle-up"/>').append('<div class="scrollbar-handle-down"/>');
             }
 
+            // save height of container to re-set it after some DOM manipulations
+            var height = this.container.height();
+
             // set scrollbar-object properties
             this.pane =            this.container.find('.scrollbar-pane');
             this.handle =          this.container.find('.scrollbar-handle');
@@ -170,7 +180,8 @@
             // set some necessary CSS attributes (can NOT be overwritten by CSS definitions)
             this.container.css({
                 'position': this.container.css('position') === 'absolute' ? 'absolute' : 'relative',
-                'overflow': 'hidden'
+                'overflow': 'hidden',
+                'height':   height
             });
             this.pane.css({
                 'position': 'absolute',
@@ -189,7 +200,7 @@
             this.handleArrows.css({
                 'position': 'absolute',
                 'cursor':   'pointer'
-            });
+            });            
         },
 
 

@@ -1,4 +1,4 @@
-/* these are the most necessary styles */
+/* basic theme: these are the most necessary styles */
 
 .scrollbar-pane {
     margin-right: 20px;
@@ -119,7 +119,7 @@
 
 /* formidable theme */
 
-.css-scrollbar.formidable {
+ul.formidable {
     padding: 0;
 }
 
@@ -143,5 +143,15 @@
 
 .formidable .scrollbar-handle.move {
     background-color: #666;
+}
+
+.formidable .scrollbar-handle-up {
+    width: 12px;
+    height: 18px;
+}
+
+.formidable .scrollbar-handle-down {
+    width: 12px;
+    height: 18px;
 }
 
