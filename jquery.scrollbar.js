@@ -223,6 +223,11 @@
 
             // append hover event on content container
             this.container.bind('mouseenter.container mouseleave.container', $.proxy(this, 'onContentHover'));
+
+            // do not bubble down click events into content container
+            this.handle.bind('click.scrollbar', this.preventClickBubbling);
+            this.handleContainer.bind('click.scrollbar', this.preventClickBubbling);
+            this.handleArrows.bind('click.scrollbar', this.preventClickBubbling);
         },
 
 
@@ -447,6 +452,14 @@
                 this.container.removeClass('hover');
                 this.handleContainer.removeClass('hover');
             }
+        },
+        
+        
+        //
+        // do not bubble down to avoid triggering click events attached within the container
+        //
+        preventClickBubbling: function(ev){
+            ev.stopPropagation();
         }
     };
 
