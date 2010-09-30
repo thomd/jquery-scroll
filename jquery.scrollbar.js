@@ -10,15 +10,47 @@
  *
  *
  * Usage:
- * ======
+ *
+ *    Append scrollbar to an arbitrary container with overflowed content:
+ *
+ *         $('selector').scrollbar();
+ *
+ *
+ *    Append scrollbar without arrows on top/bottom:
+ *
+ *         $('selector').scrollbar({
+ *            arrows: false
+ *         });
  *
  *
  *
+ * A scrollbar is based on the following box model:
  *
- *
- *
- * CSS:
- * ====
+ *    +----------------------------------|
+ *    |            <----------------------------- content container
+ *    |  +-----------------+  +------+   |
+ *    |  |                 |  |   <-------------- handle arrow up
+ *    |  |                 |  |      |   |
+ *    |  |                 |  +------+   |
+ *    |  |                 |  | +--+ |   |
+ *    |  |                 |  | |  | |   |
+ *    |  |                 |  | | <-------------- handle
+ *    |  |                 |  | |  | |   |
+ *    |  |                 |  | |  | |   |
+ *    |  |                 |  | |  | |   |
+ *    |  |                 |  | +--+ |   |
+ *    |  |                 |  |      |   |
+ *    |  |                 |  |   <-------------- handle container
+ *    |  |                 |  |      |   |
+ *    |  |         <----------------------------- pane
+ *    |  |                 |  |      |   |
+ *    |  |                 |  |      |   |
+ *    |  |                 |  +------+   |
+ *    |  |                 |  |      |   |
+ *    |  |                 |  |   <-------------- handle arrow down
+ *    |  +-----------------+  +------+   |
+ *    |                                  |
+ *    +----------------------------------|
  *
  *
  */
@@ -31,7 +63,7 @@
 
         
         //
-        // append scrollbar to every found container and return jquery object for chainability
+        // append scrollbar to selected overflowed containers and return jquery object for chainability
         //
         return this.each(function(){
 
