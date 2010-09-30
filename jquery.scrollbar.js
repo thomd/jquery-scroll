@@ -212,8 +212,11 @@
             // append drag-drop event on scrollbar-handle
             this.handle.bind('mousedown.handle', $.proxy(this, 'startOfHandleMove'));
 
-            // append mousedown event on scrollbar-handle-container
+            // append mousedown event on handle-container
             this.handleContainer.bind('mousedown.handle', $.proxy(this, 'clickHandleContainer'));
+
+            // append hover event on handle-container
+            this.handleContainer.bind('mouseenter.container mouseleave.container', $.proxy(this, 'onHandleContainerHover'));
 
             // append click event on scrollbar-up- and scrollbar-down-handles
             this.handleArrows.bind('mousedown.arrows', $.proxy(this, 'onMousedownArrows'));
@@ -451,6 +454,18 @@
             } else {
                 this.container.removeClass('hover');
                 this.handleContainer.removeClass('hover');
+            }
+        },
+        
+        
+        //
+        // add class attribute on handle-container while hovering it
+        //
+        onHandleContainerHover: function(ev){
+            if(ev.type === 'mouseenter'){
+                this.handleArrows.addClass('hover');
+            } else {
+                this.handleArrows.removeClass('hover');
             }
         },
         

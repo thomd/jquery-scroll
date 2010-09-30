@@ -1,4 +1,5 @@
-/* basic theme: these are the most necessary styles */
+
+/* ---------- basic theme: these are the most necessary styles --------------------------------- */
 
 .scrollbar-pane {
     margin-right: 20px;
@@ -44,7 +45,7 @@
 
 
 
-/* simple theme */
+/* ---------- simple theme --------------------------------------------------------------------- */
 
 .simple .scrollbar-pane {
     margin-right: 16px;
@@ -60,11 +61,15 @@
     background: #E6E6E6;
 }
 
-.simple .scrollbar-handle, .simple .scrollbar-handle-up, .simple .scrollbar-handle-down {
+.simple .scrollbar-handle, 
+.simple .scrollbar-handle-up, 
+.simple .scrollbar-handle-down {
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAHCAYAAACcLcTKAAAAMklEQVR42mP4TwRgIBJQwwyGQWkZrR0+GDxPUO9gC2Gi3UNpqFArpIdFUh3UGZqY0gwAQe422HjkstgAAAAASUVORK5CYII=);
 	background-repeat: no-repeat;
 }
 
+
+/* handle */
 .simple .scrollbar-handle {
     width: 13px;
     border: 1px solid #CCC;
@@ -81,6 +86,8 @@
     background-color: #999;
 }
 
+
+/* arrow up */
 .simple .scrollbar-handle-up {
     width: 13px;
     height: 13px;
@@ -90,6 +97,7 @@
 	margin-bottom: 1px;
 }
 
+.simple .scrollbar-handle-up.hover,
 .simple .scrollbar-handle-up:hover {
     border: 1px solid #666;
 }
@@ -98,6 +106,8 @@
     background-color: #999;
 }
 
+
+/* arrow down */
 .simple .scrollbar-handle-down {
     width: 13px;
     height: 13px;
@@ -107,6 +117,7 @@
 	margin-top: 1px;
 }
 
+.simple .scrollbar-handle-down.hover,
 .simple .scrollbar-handle-down:hover {
     border: 1px solid #666;
 }
@@ -117,7 +128,7 @@
 
 
 
-/* formidable theme */
+/* ---------- formidable theme ----------------------------------------------------------------- */
 
 ul.formidable {
     padding: 0;
