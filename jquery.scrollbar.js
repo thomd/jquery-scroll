@@ -24,7 +24,7 @@
  *
  *
  *
- * A scrollbar is based on the following box model:
+ * A vertical scrollbar is based on the following box model:
  *
  *    +----------------------------------|
  *    |            <----------------------------- content container
@@ -245,13 +245,13 @@
             this.handle.bind('mousedown.handle', $.proxy(this, 'startOfHandleMove'));
 
             // append mousedown event on handle-container
-            this.handleContainer.bind('mousedown.handle', $.proxy(this, 'clickHandleContainer'));
+            this.handleContainer.bind('mousedown.handle', $.proxy(this, 'onHandleContainerMousedown'));
 
             // append hover event on handle-container
             this.handleContainer.bind('mouseenter.container mouseleave.container', $.proxy(this, 'onHandleContainerHover'));
 
             // append click event on scrollbar-up- and scrollbar-down-handles
-            this.handleArrows.bind('mousedown.arrows', $.proxy(this, 'onMousedownArrows'));
+            this.handleArrows.bind('mousedown.arrows', $.proxy(this, 'onArrowsMousedown'));
 
             // append mousewheel event on content container
             this.container.bind('mousewheel.container', $.proxy(this, 'onMouseWheel'));
@@ -410,7 +410,7 @@
         //
         // append click handler on handle-container (outside of handle itself) to click up and down the handle 
         //
-        clickHandleContainer: function(ev){
+        onHandleContainerMousedown: function(ev){
             ev.preventDefault();
 
             // do nothing if clicked on handle
@@ -424,25 +424,31 @@
             // set incremental step of handle
             this.handle.step = this.opts.scrollStep;
 
-            // repeat handle movement while mousedown
-            var timer = setInterval($.proxy(this.moveHandle, this), this.opts.scrollSpeed);
-
             // stop handle movement on mouseup
-            $(document).one('mouseup.handlecontainer', function(){
+            var that = this;
+            $(document).bind('mouseup.handlecontainer', function(){
                 clearInterval(timer);
+                that.handle.unbind('mouseenter.handlecontainer');
+                $(document).unbind('mouseup.handlecontainer');
             });
 
             // stop handle movement when mouse is over handle
-            this.handle.one('mouseover.handlecontainer', function(){
+            //
+            // TODO: this event is fired by Firefox only. Damn!
+            //       Right now, I do not know any workaround for this. Mayby I should solve this by collision-calculation of mousepointer and handle
+            this.handle.bind('mouseenter.handlecontainer', function(){
                 clearInterval(timer);
             });
+
+            // repeat handle movement while mousedown
+            var timer = setInterval($.proxy(this.moveHandle, this), this.opts.scrollSpeed);
         },
 
 
         //
         // append mousedown handler on handle-arrows
         //
-        onMousedownArrows: function(ev){
+        onArrowsMousedown: function(ev){
             ev.preventDefault();
 
             // determine direction for handle movement
