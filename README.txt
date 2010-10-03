@@ -1,3 +1,4 @@
-Testing: 
+jQuery Scroll
+=============
 
-$('#variant_size ul').show().height(100).width(70).scrollbar({arrows:false})
+a jQuery plugin which renders a custom, CSS styleable vertical scrollbar.

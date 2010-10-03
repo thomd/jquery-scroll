@@ -128,40 +128,40 @@
 
 
 
-/* ---------- formidable theme ----------------------------------------------------------------- */
+/* ---------- fff theme ----------------------------------------------------------------- */
 
-ul.formidable {
+ul.fff {
     padding: 0;
 }
 
-.formidable .scrollbar-pane {
+.fff .scrollbar-pane {
     margin-right: 12px;
 }
 
-.formidable .scrollbar-handle-container {
+.fff .scrollbar-handle-container {
     background: #EEE;
     width: 12px;
 }
 
-.formidable .scrollbar-handle {
+.fff .scrollbar-handle {
     width: 12px;
 	background-color: #CCC;
 }
 
-.formidable .scrollbar-handle:hover {
+.fff .scrollbar-handle:hover {
     background-color: #999;
 }
 
-.formidable .scrollbar-handle.move {
+.fff .scrollbar-handle.move {
     background-color: #666;
 }
 
-.formidable .scrollbar-handle-up {
+.fff .scrollbar-handle-up {
     width: 12px;
     height: 18px;
 }
 
-.formidable .scrollbar-handle-down {
+.fff .scrollbar-handle-down {
     width: 12px;
     height: 18px;
 }
