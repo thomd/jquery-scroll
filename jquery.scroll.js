@@ -106,7 +106,8 @@
         containerHeight:   null,       // height of content container. If set to null, the current height before DOM manipulation is used
         
         arrows:            true,       // render up- and down-arrows
-        handleMinHeight:   30,         // min-height of handle [px]
+        handleHeight:      'auto',     // height of handle [px || 'auto']. If set to 'auto', the height will be calculated proportionally to the container-content height.
+        handleMinHeight:   30,         // min-height of handle [px]. This property is only used if handleHeight is set to 'auto'
         
         scrollSpeed:       50,         // speed of handle while mousedown on arrows [milli sec]
         scrollStep:        20,         // handle increment between two mousedowns on arrows [px]
@@ -279,9 +280,8 @@
             });
             this.props.contentHeight = contentHeight;
 
-            // set height of handle proportionally
-            this.props.handleHeight = Math.max(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight, this.opts.handleMinHeight);
-
+            // set height of handle
+            this.props.handleHeight = this.opts.handleHeight == 'auto' ? Math.max(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight, this.opts.handleMinHeight) : this.opts.handleHeight;
             this.handle.height(this.props.handleHeight);
             this.handle.height(2 * this.handle.height() - this.handle.outerHeight(true));  // this is sort of setting outerHeight
 
