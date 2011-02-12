@@ -7,6 +7,7 @@ jstestdriver.Fixture = function() {
 
   /*:DOC += 
   <div class="scrollbar" style="max-height:100px;">
+    <p>0</p>
     <p>1</p>
     <p>2</p>
     <p>3</p>
@@ -21,6 +22,7 @@ jstestdriver.Fixture = function() {
 
   /*:DOC += 
   <div class="no-scrollbar">
+    <p>0</p>
     <p>1</p>
     <p>2</p>
     <p>3</p>
@@ -32,6 +34,7 @@ jstestdriver.Fixture = function() {
     <p>9</p>
   </div>
   */
+  
   return {
     scrollbar: $('.scrollbar'),
     noScrollbar: $('.no-scrollbar')
