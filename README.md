@@ -1,7 +1,7 @@
 jQuery Scroll
 =============
 
-a jQuery plugin which renders a custom, CSS styleable vertical scrollbar.
+a jQuery plugin which renders a custom, CSS styleable vertical scrollbar for arbitrary overflowed elements.
 
 
 Unit Tests
