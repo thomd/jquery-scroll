@@ -29,6 +29,9 @@ TestCase("ScrollbarGeneratorTest", {
 });
 
 
+//
+// test for plugin options and class-based options
+//
 TestCase("OptionsTest", {
   setUp: function(){
     this.fixture = jstestdriver.Fixture();
@@ -45,18 +48,41 @@ TestCase("OptionsTest", {
 
   testMinimumHandleHeight: function(){
     this.fixture.scrollbar.scrollbar({
-      handleHeight: 'auto',
-      handleMinHeight: 25
+      handleMinHeight: 50
     });
-    assertEquals("Minimum height of scrollbar handle", 25, this.fixture.scrollbar.find('.scrollbar-handle').height());
+    assertEquals("Minimum height of scrollbar handle", 50, this.fixture.scrollbar.find('.scrollbar-handle').height());
   },
 
   testAutoHandleHeight: function(){
     this.fixture.scrollbar.scrollbar({
-      handleHeight: 'auto',
       handleMinHeight: 0
     });
-    assertEquals("Actual height of scrollbar handle", 22, this.fixture.scrollbar.find('.scrollbar-handle').height());
+    assertEquals("Actual height of scrollbar handle", 32, this.fixture.scrollbar.find('.scrollbar-handle').height());
+  },
+  
+  testScrollbarWithArrows: function(){
+    this.fixture.scrollbar.scrollbar({
+      arrows: true
+    });
+    assertEquals(1, this.fixture.scrollbar.find('.scrollbar-handle-container').length);
+    assertEquals(1, this.fixture.scrollbar.find('.scrollbar-handle-up').length);
+    assertEquals(1, this.fixture.scrollbar.find('.scrollbar-handle-down').length);
+  },
+  
+  testScrollbarWithoutArrows: function(){
+    this.fixture.scrollbar.scrollbar({
+      arrows: false
+    });
+    assertEquals(1, this.fixture.scrollbar.find('.scrollbar-handle-container').length);
+    assertEquals(0, this.fixture.scrollbar.find('.scrollbar-handle-up').length);
+    assertEquals(0, this.fixture.scrollbar.find('.scrollbar-handle-down').length);
+  },
+  
+  testScrollbarWithoutArrowsByClassAttribute: function(){
+    this.fixture.noArrows.scrollbar();
+    assertEquals(1, this.fixture.noArrows.find('.scrollbar-handle-container').length);
+    assertEquals(0, this.fixture.noArrows.find('.scrollbar-handle-up').length);
+    assertEquals(0, this.fixture.noArrows.find('.scrollbar-handle-down').length);
   }
 });
 
