@@ -95,7 +95,11 @@
 
             // create scrollbar object
             var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
-            return scrollbar;
+            
+            // build, initialize & append events
+            scrollbar.buildHtml();
+            scrollbar.initHandle();
+            scrollbar.appendEvents();
         });
     };
 
@@ -133,11 +137,6 @@
 
         // disable arrows via class attribute 'no-arrows' on a container
         this.props.arrows = this.container.hasClass('no-arrows') ? false : this.props.arrows;
-
-        // initialize
-        this.buildHtml();
-        this.initHandle();
-        this.appendEvents();
     };
 
     //
