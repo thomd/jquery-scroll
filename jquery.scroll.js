@@ -68,6 +68,8 @@
         return this.each(function(){
 
             var container = $(this), 
+                
+                // properties
                 props = {
                     arrows: options.arrows
                 };
@@ -77,21 +79,21 @@
                 container.height(options.containerHeight);
             }
 
-            // determine container height
+            // save container height in properties
             props.containerHeight = container.height();
 
-            // determine inner content height
+            // save inner content height in properties. This is the height of all elements within the container.
             props.contentHeight = 0;
             container.children().each(function(){
                 props.contentHeight += $(this).outerHeight();
             });
 
-            // do nothing and return if a scrollbar is not neccessary
+            // if the content height is lower than the container height, do nothing and return.
             if(props.contentHeight <= props.containerHeight){
                 return true;
             }
 
-            // create scrollbar
+            // create scrollbar object
             var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
             return scrollbar;
         });
@@ -119,7 +121,7 @@
 
 
     //
-    // Scrollbar class properties
+    // Scrollbar constructor
     //
     $.fn.scrollbar.Scrollbar = function(container, props, options){
 
@@ -139,7 +141,7 @@
     };
 
     //
-    // Scrollbar class methods
+    // Scrollbar methods
     //
     $.fn.scrollbar.Scrollbar.prototype = {
 
@@ -148,13 +150,13 @@
         //
         //   from:
         //
-        //      <div class="scrollbar">                             --> arbitrary element with class="scrollbar"
+        //      <div class="foo">                                   --> arbitrary element with a fixed height or a max-height lower that its containing elements
         //          [...]
         //      </div>
         //
         //   to:
         //
-        //      <div class="scrollbar">                             --> this.container
+        //      <div class="foo">                                   --> this.container
         //          <div class="scrollbar-pane">                    --> this.pane
         //              [...]
         //          </div>
@@ -170,7 +172,7 @@
         //
         buildHtml: function(){
 
-            // build some DOM nodes
+            // build new DOM nodes 
             this.container.children().wrapAll('<div class="scrollbar-pane"/>');
             this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle"/></div>');
             if(this.props.arrows){
@@ -188,7 +190,7 @@
             this.handleArrowUp =   this.container.find('.scrollbar-handle-up');
             this.handleArrowDown = this.container.find('.scrollbar-handle-down');
 
-            // set some default CSS attributes (may be overwritten by CSS definitions)
+            // set some default CSS attributes (may be overwritten by CSS definitions in an external CSS file)
             this.pane.defaultCss({
                 'top':      0,
                 'left':     0
@@ -619,4 +621,5 @@
 
         return $.event.handle.apply(this, args);
     };
+    
 })(jQuery, document);  // inject global jQuery object
