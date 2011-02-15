@@ -239,6 +239,34 @@
 
 
         //
+        // calculate positions and dimensions of handle and arrow-handles
+        //
+        initHandle: function(){
+            this.props.handleContainerHeight = this.handleContainer.height();
+            this.props.contentHeight = this.pane.height();
+
+           // height of handle
+            this.props.handleHeight = this.opts.handleHeight == 'auto' ? Math.max(Math.ceil(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight), this.opts.handleMinHeight) : this.opts.handleHeight;
+            this.handle.height(this.props.handleHeight);
+            
+            // if handle has a border (always be aware of the css box-model), we need to correct the handle height.
+            this.handle.height(2 * this.handle.height() - this.handle.outerHeight(true));
+
+            // min- and max-range for handle
+            this.props.handleTop = {
+                min: 0,
+                max: this.props.handleContainerHeight - this.props.handleHeight
+            };
+
+            // ratio of handle-container-height to content-container-height (to calculate position of content related to position of handle)
+            this.props.handleContentRatio = (this.props.contentHeight - this.props.containerHeight) / (this.props.handleContainerHeight - this.props.handleHeight);
+
+            // initial position of handle at top
+            this.handle.top = 0;
+        },
+
+
+        //
         // append events on handle and handle-container
         //
         appendEvents: function(){
@@ -265,38 +293,6 @@
             this.handle.bind('click.scrollbar', this.preventClickBubbling);
             this.handleContainer.bind('click.scrollbar', this.preventClickBubbling);
             this.handleArrows.bind('click.scrollbar', this.preventClickBubbling);
-        },
-
-
-        //
-        // calculate height of handle (height of handle should indicate height of content related to content-container).
-        //
-        initHandle: function(){
-            this.props.handleContainerHeight = this.handleContainer.height();
-
-            // we need to calculate content-height again: due to the added scrollbar, the width decreased - hence the height increased!
-            var contentHeight = 0;
-            this.pane.children().each(function(){
-                contentHeight += $(this).outerHeight(true);
-            });
-            this.props.contentHeight = contentHeight;
-
-            // set height of handle
-            this.props.handleHeight = this.opts.handleHeight == 'auto' ? Math.max(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight, this.opts.handleMinHeight) : this.opts.handleHeight;
-            this.handle.height(this.props.handleHeight);
-            this.handle.height(2 * this.handle.height() - this.handle.outerHeight(true));  // this is sort of setting outerHeight
-
-            // set min- and max-range for handle
-            this.props.handleTop = {
-                min: 0,
-                max: this.props.handleContainerHeight - this.props.handleHeight
-            };
-
-            // set ratio of handle-container to content-container (to calculate position of content related to position of handle)
-            this.props.handleContentRatio = (this.props.contentHeight - this.props.containerHeight) / (this.props.handleContainerHeight - this.props.handleHeight);
-
-            // set initial position of handle at top
-            this.handle.top = 0;
         },
 
 
