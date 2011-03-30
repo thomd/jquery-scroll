@@ -1,20 +1,37 @@
-// javascript:(function(){var%20b=document.createElement(%22link%22);b.type=%22text/css%22;b.rel=%22stylesheet%22;b.href=%22http://localhost.jquery/jquery-scrollbar/css/scrollbar.css%22;document.getElementsByTagName(%22head%22)[0].appendChild(b);var%20a=document.createElement(%22script%22);a.type=%22text/javascript%22;a.src=%22http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js%22;a.onload=function(){var%20c=document.createElement(%22script%22);c.type=%22text/javascript%22;c.src=%22http://localhost.jquery/jquery-scrollbar/jquery.scroll.js%22;document.getElementsByTagName(%22body%22)[0].appendChild(c)};document.getElementsByTagName(%22body%22)[0].appendChild(a)})();
+// javascript:(function(){if(typeof%20jQuery==%22undefined%22){var%20c=typeof%20$==%22function%22;a(function(){if(c){jQuery.noConflict()}b()})}else{b()}function%20b(){jQuery(%22<link>%22).attr({type:%22text/css%22,rel:%22stylesheet%22,href:%22https://github.com/thomd/jquery-scroll/raw/master/css/scrollbar.css%22}).appendTo(%22head%22);jQuery.getScript(%22https://github.com/thomd/jquery-scroll/raw/master/jquery.scroll.js%22,function(){jQuery(%22*%22).filter(function(){return%20jQuery(this).css(%22overflow%22).match(/auto|scroll/)}).scrollbar()})}function%20a(f){var%20e=document.createElement(%22script%22);e.src=%22http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js%22;var%20d=false;e.onload=e.onreadystatechange=function(){if(!d&&(!this.readyState||this.readyState==%22loaded%22||this.readyState==%22complete%22)){d=true;f()}};document.getElementsByTagName(%22head%22)[0].appendChild(e)}})();
 
 (function(){
-    var style = document.createElement("link");
-    style.type = "text/css";
-    style.rel = "stylesheet";
-    style.href = "http://localhost.jquery/jquery-scrollbar/css/scrollbar.css";
-    document.getElementsByTagName("head")[0].appendChild(style);
+  if(typeof jQuery == 'undefined'){
+    var otherlib = typeof $ == 'function';
+    loadJQuery(function(){
+      if(otherlib) jQuery.noConflict();
+      loadScrollbar();
+    });
+  } else {
+    loadScrollbar();
+  }
+  
+  function loadScrollbar(){
+    jQuery("<link>").attr({
+      type: 'text/css',
+      rel: 'stylesheet',
+      href: 'https://github.com/thomd/jquery-scroll/raw/master/css/scrollbar.css'
+    }).appendTo('head');
+    jQuery.getScript('https://github.com/thomd/jquery-scroll/raw/master/jquery.scroll.js', function(){
+      jQuery('*').filter(function(){return jQuery(this).css('overflow').match(/auto|scroll/)}).scrollbar();
+    });
+  }
 
-    var script = document.createElement('script');
-    script.type = "text/javascript";
-    script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js";
-    script.onload = function(){
-        var script = document.createElement('script');
-        script.type = "text/javascript";
-        script.src = "http://localhost.jquery/jquery-scrollbar/jquery.scroll.js";
-        document.getElementsByTagName('body')[0].appendChild(script);
-    };
-    document.getElementsByTagName('body')[0].appendChild(script);
-})()
+  function loadJQuery(fn){
+      var script = document.createElement('script');
+      script.src = 'http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js';
+      var done = false;
+      script.onload = script.onreadystatechange = function(){
+          if (!done && (!this.readyState || this.readyState == 'loaded' || this.readyState == 'complete')) {
+              done = true;
+              fn();
+          }
+      };
+      document.getElementsByTagName('head')[0].appendChild(script);
+  }
+})();
