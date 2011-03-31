@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>jquery-scroll testing bookmarklet</title>
     <style type="text/css">
-      body {font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:38px;font-weight:bold;letter-spacing:-0.05em;line-height:1.3em;margin:50px;}
+      body {font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:38px;font-weight:bold;letter-spacing:-0.05em;line-height:1.3em;margin:50px;color:#444;}
       section {display:block;padding-top:50px;}
       a {color:#FF2125;cursor:pointer;display:inline-block;text-decoration:none;line-height:1em;}
       a:hover {border-bottom:4px solid #FF2125;}
@@ -25,7 +25,7 @@
       <p class="bookmarklet">Drag this link to your Bookmarks Bar : <a href="javascript:(function(){if(typeof%20jQuery==%22undefined%22){var%20c=typeof%20$==%22function%22;a(function(){if(c){jQuery.noConflict()}b()})}else{b()}function%20b(){jQuery(%22<link>%22).attr({type:%22text/css%22,rel:%22stylesheet%22,href:%22https://github.com/thomd/jquery-scroll/raw/master/css/scrollbar.css%22}).appendTo(%22head%22);jQuery.getScript(%22https://github.com/thomd/jquery-scroll/raw/master/jquery.scroll.js%22,function(){jQuery(%22*%22).filter(function(){return%20jQuery(this).css(%22overflow%22).match(/auto|scroll/)}).scrollbar()})}function%20a(f){var%20e=document.createElement(%22script%22);e.src=%22http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js%22;var%20d=false;e.onload=e.onreadystatechange=function(){if(!d&&(!this.readyState||this.readyState==%22loaded%22||this.readyState==%22complete%22)){d=true;f()}};document.getElementsByTagName(%22head%22)[0].appendChild(e)}})();">jquery-scroll testing</a></p>
     </section>
     <section>
-      <a class="source" href="#">view source</a>
+      <a class="source" href="#">view formatted bookmarklet source</a>
       <pre><code>(function(){
 if(typeof jQuery == 'undefined'){
   var otherlib = typeof $ == 'function';
@@ -38,7 +38,7 @@ if(typeof jQuery == 'undefined'){
 }
 
 function loadScrollbar(){
-  jQuery("<link>").attr({
+  jQuery('&lt;link>').attr({
     type: 'text/css',
     rel: 'stylesheet',
     href: 'https://github.com/thomd/jquery-scroll/raw/master/css/scrollbar.css'
