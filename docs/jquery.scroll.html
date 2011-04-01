@@ -1,0 +1,960 @@
+<html>
+	<head>
+		<title>jquery-scroll</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<style>body {
+    margin: 0;
+    padding: 0;
+    font: 14px/1.5 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+    color: #252519;
+}
+a {
+    color: #252519;
+}
+a:hover {
+    text-decoration: underline;
+    color: #19469D;
+}
+p {
+    margin: 12px 0;
+}
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+}
+table#source {
+    width: 100%;
+    border-collapse: collapse;
+}
+table#source td:first-child {
+    padding: 30px 40px 30px 40px;
+    vertical-align: top;
+}
+table#source td:first-child,
+table#source td:first-child pre {
+    width: 450px;
+}
+table#source td:last-child {
+    padding: 30px 0 30px 40px;
+    border-left: 1px solid #E5E5EE;
+    background: #F5F5FF;
+}
+table#source tr {
+    border-bottom: 1px solid #E5E5EE;
+}
+table#source tr.filename {
+    padding-top: 40px;
+    border-top: 1px solid #E5E5EE;
+}
+table#source tr.filename td:first-child {
+    text-transform: capitalize;
+}
+table#source tr.filename td:last-child {
+    font-size: 12px;
+}
+table#source tr.filename h2 {
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+table#source tr.code h1,
+table#source tr.code h2,
+table#source tr.code h3 {
+    margin-top: 30px;
+    font-family: "Lucida Grande", "Helvetica Nueue", Arial, sans-serif;
+    font-size: 18px;
+}
+table#source tr.code h2 {
+    font-size: 16px;
+}
+table#source tr.code h3 {
+    font-size: 14px;
+}
+table#source tr.code ul {
+    margin: 15px 0 15px 35px;
+    padding: 0;
+}
+table#source tr.code ul li {
+    margin: 0;
+    padding: 1px 0;
+}
+table#source tr.code ul li p {
+    margin: 0;
+    padding: 0;
+}
+table#source tr.code td:first-child pre {
+    padding: 20px;
+}
+#ribbon {
+    position: fixed;
+    top: 0;
+    right: 0;
+}
+code .string { color: #219161; }
+code .regexp { color: #219161; }
+code .keyword { color: #954121; }
+code .number { color: #19469D; }
+code .comment { color: #bbb; }
+code .this { color: #19469D; }</style>
+		<script>
+			$(function(){
+				$('tr.code').hide();
+				$('tr.filename').toggle(function(){
+					$(this).nextUntil('.filename').fadeIn();
+				}, function(){
+					$(this).nextUntil('.filename').fadeOut();
+				});
+			});
+		</script>
+	</head>
+	<body>
+<table id="source"><tbody><tr><td><h1>jquery-scroll</h1></td><td></td></tr><tr class="filename"><td><h2 id="jquery.scroll.js"><a href="#">jquery.scroll</a></h2></td><td>jquery.scroll.js</td></tr><tr class="code">
+<td class="docs">
+<p>jslint eqeqeq: true, regexp: true </p>
+</td>
+<td class="code">
+
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>global document, window, setInterval, clearInterval, handler, jQuery </p>
+</td>
+<td class="code">
+
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Scrollbar - a jQuery plugin for custom scrollbars</p>
+
+<ul><li><strong>author</strong>: <em>Thomas</em>
+Duerr, me@thomd.net</li><li><strong>date</strong>: <em>03</em>
+.2010</li><li><strong>requires</strong>: <em>jquery</em>
+v1.4.2 </li></ul>
+
+<h2>Usage</h2>
+
+<p>   Append scrollbar to an arbitrary container with overflowed content:</p>
+
+<pre><code>    $('selector').scrollbar();</code></pre>
+
+<p>   Append scrollbar without arrows on top/bottom:</p>
+
+<pre><code>    $('selector').scrollbar({
+       arrows: false
+    });</code></pre>
+
+<p>A vertical scrollbar is based on the following box model:</p>
+
+<p>   +----------------------------------+
+   |            &lt;----------------------------- content container
+   |  +-----------------+  +------+   |
+   |  |                 |  |   &lt;-------------- handle arrow up
+   |  |                 |  |      |   |
+   |  |                 |  +------+   |
+   |  |                 |  | +--+ |   |
+   |  |                 |  | |  | |   |
+   |  |                 |  | | &lt;-------------- handle
+   |  |                 |  | |  | |   |
+   |  |                 |  | |  | |   |
+   |  |                 |  | |  | |   |
+   |  |                 |  | +--+ |   |
+   |  |                 |  |      |   |
+   |  |                 |  |   &lt;-------------- handle container
+   |  |                 |  |      |   |
+   |  |         &lt;----------------------------- pane
+   |  |                 |  |      |   |
+   |  |                 |  |      |   |
+   |  |                 |  +------+   |
+   |  |                 |  |      |   |
+   |  |                 |  |   &lt;-------------- handle arrow down
+   |  +-----------------+  +------+   |
+   |                                  |
+   +----------------------------------+</p>
+
+<p> </p>
+</td>
+<td class="code">
+<pre><code>(<span class="keyword">function</span>($, <span class="variable">document</span>){
+
+    $.<span class="variable">fn</span>.<span class="variable">scrollbar</span> = <span class="keyword">function</span>(<span class="variable">opts</span>){
+
+        <span class="comment">// Extend default options</span>
+        <span class="keyword">var</span> <span class="variable">options</span> = $.<span class="variable">extend</span>({}, $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">defaults</span>, <span class="variable">opts</span>);
+
+        
+        <span class="comment">//</span>
+        <span class="comment">// append scrollbar to selected overflowed containers and return jquery object for chainability</span>
+        <span class="comment">//</span>
+        <span class="keyword">return</span> <span class="this">this</span>.<span class="variable">each</span>(<span class="keyword">function</span>(){
+
+            <span class="keyword">var</span> <span class="variable">container</span> = $(<span class="this">this</span>), 
+                
+                <span class="comment">// properties</span>
+                <span class="variable">props</span> = {
+                    <span class="variable">arrows</span>: <span class="variable">options</span>.<span class="variable">arrows</span>
+                };
+
+            <span class="comment">// fix margin collapsing</span>
+<span class="comment">//            $.fn.scrollbar.fixMarginCollapsing(container);</span>
+
+            <span class="comment">// set container height</span>
+            <span class="variable">props</span>.<span class="variable">containerHeight</span> = <span class="variable">options</span>.<span class="variable">containerHeight</span> ? <span class="variable">container</span>.<span class="variable">height</span>(<span class="variable">options</span>.<span class="variable">containerHeight</span>) : <span class="variable">container</span>.<span class="variable">height</span>();
+
+            <span class="comment">// content height.</span>
+            <span class="variable">props</span>.<span class="variable">contentHeight</span> = $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">contentHeight</span>(<span class="variable">container</span>);
+
+            <span class="comment">// if the content height is lower than the container height, do nothing and return.</span>
+            <span class="keyword">if</span>(<span class="variable">props</span>.<span class="variable">contentHeight</span> &<span class="variable">lt</span>;= <span class="variable">props</span>.<span class="variable">containerHeight</span>){
+                <span class="keyword">return</span> <span class="variable">true</span>;
+            }
+
+            <span class="comment">// now create a scrollbar object ...</span>
+            <span class="keyword">var</span> <span class="variable">scrollbar</span> = <span class="keyword">new</span> $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="class">Scrollbar</span>(<span class="variable">container</span>, <span class="variable">props</span>, <span class="variable">options</span>);
+            
+            <span class="comment">// ... and build, initialize &amp; append events</span>
+            <span class="variable">scrollbar</span>.<span class="variable">buildHtml</span>();
+            <span class="variable">scrollbar</span>.<span class="variable">initHandle</span>();
+            <span class="variable">scrollbar</span>.<span class="variable">appendEvents</span>();
+        });
+    };
+
+
+
+    <span class="comment">//</span>
+    <span class="comment">// default options</span>
+    <span class="comment">//</span>
+    $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">defaults</span> = {
+        <span class="variable">containerHeight</span>:   <span class="keyword">null</span>,       <span class="comment">// height of content container. If set to null, the current height before DOM manipulation is used</span>
+        
+        <span class="variable">arrows</span>:            <span class="variable">true</span>,       <span class="comment">// render up- and down-arrows</span>
+        <span class="variable">handleHeight</span>:      <span class="string">'auto'</span>,     <span class="comment">// height of handle [px || 'auto']. If set to 'auto', the height will be calculated proportionally to the container-content height.</span>
+        <span class="variable">handleMinHeight</span>:   <span class="number integer">30</span>,         <span class="comment">// min-height of handle [px]. This property is only used if handleHeight is set to 'auto'</span>
+        
+        <span class="variable">scrollSpeed</span>:       <span class="number integer">50</span>,         <span class="comment">// speed of handle while mousedown on arrows [milli sec]</span>
+        <span class="variable">scrollStep</span>:        <span class="number integer">20</span>,         <span class="comment">// handle increment between two mousedowns on arrows [px]</span>
+        
+        <span class="variable">scrollSpeedArrows</span>: <span class="number integer">40</span>,         <span class="comment">// speed of handle while mousedown within the handle container [milli sec]</span>
+        <span class="variable">scrollStepArrows</span>:  <span class="number integer">3</span>           <span class="comment">// handle increment between two mousedowns within the handle container [px]</span>
+    };
+
+
+
+    <span class="comment">//</span>
+    <span class="comment">// Scrollbar constructor</span>
+    <span class="comment">//</span>
+    $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="class">Scrollbar</span> = <span class="keyword">function</span>(<span class="variable">container</span>, <span class="variable">props</span>, <span class="variable">options</span>){
+
+        <span class="comment">// set object properties</span>
+        <span class="this">this</span>.<span class="variable">container</span> = <span class="variable">container</span>;
+        <span class="this">this</span>.<span class="variable">props</span> =     <span class="variable">props</span>;
+        <span class="this">this</span>.<span class="variable">opts</span> =      <span class="variable">options</span>;
+        <span class="this">this</span>.<span class="variable">mouse</span> =     {};
+
+        <span class="comment">// disable arrows via class attribute 'no-arrows' on a container</span>
+        <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">arrows</span> = <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">hasClass</span>(<span class="string">'no-arrows'</span>) ? <span class="variable">false</span> : <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">arrows</span>;
+    };
+
+    <span class="comment">//</span>
+    <span class="comment">// Scrollbar methods</span>
+    <span class="comment">//</span>
+    $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="class">Scrollbar</span>.<span class="variable">prototype</span> = {
+
+        <span class="comment">//</span>
+        <span class="comment">// build DOM nodes for pane and scroll-handle</span>
+        <span class="comment">//</span>
+        <span class="comment">//   from:</span>
+        <span class="comment">//</span>
+        <span class="comment">//      &lt;div class=&quot;foo&quot;&gt;                                   --&gt; arbitrary element with a fixed height or a max-height lower that its containing elements</span>
+        <span class="comment">//          [...]</span>
+        <span class="comment">//      &lt;/div&gt;</span>
+        <span class="comment">//</span>
+        <span class="comment">//   to:</span>
+        <span class="comment">//</span>
+        <span class="comment">//      &lt;div class=&quot;foo&quot;&gt;                                   --&gt; this.container</span>
+        <span class="comment">//          &lt;div class=&quot;scrollbar-pane&quot;&gt;                    --&gt; this.pane</span>
+        <span class="comment">//              [...]</span>
+        <span class="comment">//          &lt;/div&gt;</span>
+        <span class="comment">//          &lt;div class=&quot;scrollbar-handle-container&quot;&gt;        --&gt; this.handleContainer</span>
+        <span class="comment">//              &lt;div class=&quot;scrollbar-handle&quot;&gt;&lt;/div&gt;        --&gt; this.handle</span>
+        <span class="comment">//          &lt;/div&gt;</span>
+        <span class="comment">//          &lt;div class=&quot;scrollbar-handle-up&quot;&gt;&lt;/div&gt;         --&gt; this.handleArrows</span>
+        <span class="comment">//          &lt;div class=&quot;scrollbar-handle-down&quot;&gt;&lt;/div&gt;       --&gt; this.handleArrows</span>
+        <span class="comment">//      &lt;/div&gt;</span>
+        <span class="comment">//</span>
+        <span class="comment">//</span>
+        <span class="comment">// TODO: use detach-transform-attach or DOMfragment</span>
+        <span class="comment">//</span>
+        <span class="variable">buildHtml</span>: <span class="keyword">function</span>(){
+
+            <span class="comment">// build new DOM nodes </span>
+            <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">children</span>().<span class="variable">wrapAll</span>(<span class="string">'&lt;div class=&quot;scrollbar-pane&quot;/&gt;'</span>);
+            <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">append</span>(<span class="string">'&lt;div class=&quot;scrollbar-handle-container&quot;&gt;&lt;div class=&quot;scrollbar-handle&quot;/&gt;&lt;/div&gt;'</span>);
+            <span class="keyword">if</span>(<span class="this">this</span>.<span class="variable">props</span>.<span class="variable">arrows</span>){
+                <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">append</span>(<span class="string">'&lt;div class=&quot;scrollbar-handle-up&quot;/&gt;'</span>).<span class="variable">append</span>(<span class="string">'&lt;div class=&quot;scrollbar-handle-down&quot;/&gt;'</span>);
+            }
+
+            <span class="comment">// save height of container to re-set it after some DOM manipulations</span>
+            <span class="keyword">var</span> <span class="variable">height</span> = <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">height</span>();
+
+            <span class="comment">// set scrollbar-object properties</span>
+            <span class="this">this</span>.<span class="variable">pane</span> =            <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">find</span>(<span class="string">'.scrollbar-pane'</span>);
+            <span class="this">this</span>.<span class="variable">handle</span> =          <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">find</span>(<span class="string">'.scrollbar-handle'</span>);
+            <span class="this">this</span>.<span class="variable">handleContainer</span> = <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">find</span>(<span class="string">'.scrollbar-handle-container'</span>);
+            <span class="this">this</span>.<span class="variable">handleArrows</span> =    <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">find</span>(<span class="string">'.scrollbar-handle-up, .scrollbar-handle-down'</span>);
+            <span class="this">this</span>.<span class="variable">handleArrowUp</span> =   <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">find</span>(<span class="string">'.scrollbar-handle-up'</span>);
+            <span class="this">this</span>.<span class="variable">handleArrowDown</span> = <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">find</span>(<span class="string">'.scrollbar-handle-down'</span>);
+
+            <span class="comment">// set some default CSS attributes (may be overwritten by CSS definitions in an external CSS file)</span>
+            <span class="this">this</span>.<span class="variable">pane</span>.<span class="variable">defaultCss</span>({
+                <span class="string">'top'</span>:      <span class="number integer">0</span>,
+                <span class="string">'left'</span>:     <span class="number integer">0</span>
+            });
+            <span class="this">this</span>.<span class="variable">handleContainer</span>.<span class="variable">defaultCss</span>({
+                <span class="string">'right'</span>:    <span class="number integer">0</span>
+            });
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">defaultCss</span>({
+                <span class="string">'top'</span>:      <span class="number integer">0</span>,
+                <span class="string">'right'</span>:    <span class="number integer">0</span>
+            });
+            <span class="this">this</span>.<span class="variable">handleArrows</span>.<span class="variable">defaultCss</span>({
+                <span class="string">'right'</span>:    <span class="number integer">0</span>
+            });
+            <span class="this">this</span>.<span class="variable">handleArrowUp</span>.<span class="variable">defaultCss</span>({
+                <span class="string">'top'</span>:      <span class="number integer">0</span>
+            });
+            <span class="this">this</span>.<span class="variable">handleArrowDown</span>.<span class="variable">defaultCss</span>({
+                <span class="string">'bottom'</span>:   <span class="number integer">0</span>
+            });
+
+            <span class="comment">// set some necessary CSS attributes (can NOT be overwritten by CSS definitions)</span>
+            <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">css</span>({
+                <span class="string">'position'</span>: <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">css</span>(<span class="string">'position'</span>) === <span class="string">'absolute'</span> ? <span class="string">'absolute'</span> : <span class="string">'relative'</span>,
+                <span class="string">'overflow'</span>: <span class="string">'hidden'</span>,
+                <span class="string">'height'</span>:   <span class="variable">height</span>
+            });
+            <span class="this">this</span>.<span class="variable">pane</span>.<span class="variable">css</span>({
+                <span class="string">'position'</span>: <span class="string">'absolute'</span>,
+                <span class="string">'overflow'</span>: <span class="string">'visible'</span>,
+                <span class="string">'height'</span>:   <span class="string">'auto'</span>
+            });
+            <span class="this">this</span>.<span class="variable">handleContainer</span>.<span class="variable">css</span>({
+                <span class="string">'position'</span>: <span class="string">'absolute'</span>,
+                <span class="string">'top'</span>:      <span class="this">this</span>.<span class="variable">handleArrowUp</span>.<span class="variable">outerHeight</span>(<span class="variable">true</span>),
+                <span class="string">'height'</span>:   (<span class="this">this</span>.<span class="variable">props</span>.<span class="variable">containerHeight</span> - <span class="this">this</span>.<span class="variable">handleArrowUp</span>.<span class="variable">outerHeight</span>(<span class="variable">true</span>) - <span class="this">this</span>.<span class="variable">handleArrowDown</span>.<span class="variable">outerHeight</span>(<span class="variable">true</span>)) + <span class="string">'px'</span>
+            });
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">css</span>({
+                <span class="string">'position'</span>: <span class="string">'absolute'</span>,
+                <span class="string">'cursor'</span>:   <span class="string">'pointer'</span>
+            });
+            <span class="this">this</span>.<span class="variable">handleArrows</span>.<span class="variable">css</span>({
+                <span class="string">'position'</span>: <span class="string">'absolute'</span>,
+                <span class="string">'cursor'</span>:   <span class="string">'pointer'</span>
+            });            
+        },
+
+
+        <span class="comment">//</span>
+        <span class="comment">// calculate positions and dimensions of handle and arrow-handles</span>
+        <span class="comment">//</span>
+        <span class="variable">initHandle</span>: <span class="keyword">function</span>(){
+            <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleContainerHeight</span> = <span class="this">this</span>.<span class="variable">handleContainer</span>.<span class="variable">height</span>();
+            <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">contentHeight</span> = <span class="this">this</span>.<span class="variable">pane</span>.<span class="variable">height</span>();
+
+           <span class="comment">// height of handle</span>
+            <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleHeight</span> = <span class="this">this</span>.<span class="variable">opts</span>.<span class="variable">handleHeight</span> == <span class="string">'auto'</span> ? <span class="class">Math</span>.<span class="variable">max</span>(<span class="class">Math</span>.<span class="variable">ceil</span>(<span class="this">this</span>.<span class="variable">props</span>.<span class="variable">containerHeight</span> * <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleContainerHeight</span> / <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">contentHeight</span>), <span class="this">this</span>.<span class="variable">opts</span>.<span class="variable">handleMinHeight</span>) : <span class="this">this</span>.<span class="variable">opts</span>.<span class="variable">handleHeight</span>;
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">height</span>(<span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleHeight</span>);
+
+            <span class="comment">// if handle has a border (always be aware of the css box-model), we need to correct the handle height.</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">height</span>(<span class="number integer">2</span> * <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">height</span>() - <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">outerHeight</span>(<span class="variable">true</span>));
+
+            <span class="comment">// min- and max-range for handle</span>
+            <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleTop</span> = {
+                <span class="variable">min</span>: <span class="number integer">0</span>,
+                <span class="variable">max</span>: <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleContainerHeight</span> - <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleHeight</span>
+            };
+
+            <span class="comment">// ratio of handle-container-height to content-container-height (to calculate position of content related to position of handle)</span>
+            <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleContentRatio</span> = (<span class="this">this</span>.<span class="variable">props</span>.<span class="variable">contentHeight</span> - <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">containerHeight</span>) / (<span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleContainerHeight</span> - <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleHeight</span>);
+
+            <span class="comment">// initial position of handle at top</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> = <span class="number integer">0</span>;
+        },
+
+
+        <span class="comment">//</span>
+        <span class="comment">// append events on handle and handle-container</span>
+        <span class="comment">//</span>
+        <span class="variable">appendEvents</span>: <span class="keyword">function</span>(){
+
+            <span class="comment">// append drag-drop event on scrollbar-handle</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">bind</span>(<span class="string">'mousedown.handle'</span>, $.<span class="variable">proxy</span>(<span class="this">this</span>, <span class="string">'startOfHandleMove'</span>));
+
+            <span class="comment">// append mousedown event on handle-container</span>
+            <span class="this">this</span>.<span class="variable">handleContainer</span>.<span class="variable">bind</span>(<span class="string">'mousedown.handle'</span>, $.<span class="variable">proxy</span>(<span class="this">this</span>, <span class="string">'onHandleContainerMousedown'</span>));
+
+            <span class="comment">// append hover event on handle-container</span>
+            <span class="this">this</span>.<span class="variable">handleContainer</span>.<span class="variable">bind</span>(<span class="string">'mouseenter.container mouseleave.container'</span>, $.<span class="variable">proxy</span>(<span class="this">this</span>, <span class="string">'onHandleContainerHover'</span>));
+
+            <span class="comment">// append click event on scrollbar-up- and scrollbar-down-handles</span>
+            <span class="this">this</span>.<span class="variable">handleArrows</span>.<span class="variable">bind</span>(<span class="string">'mousedown.arrows'</span>, $.<span class="variable">proxy</span>(<span class="this">this</span>, <span class="string">'onArrowsMousedown'</span>));
+
+            <span class="comment">// append mousewheel event on content container</span>
+            <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">bind</span>(<span class="string">'mousewheel.container'</span>, $.<span class="variable">proxy</span>(<span class="this">this</span>, <span class="string">'onMouseWheel'</span>));
+
+            <span class="comment">// append hover event on content container</span>
+            <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">bind</span>(<span class="string">'mouseenter.container mouseleave.container'</span>, $.<span class="variable">proxy</span>(<span class="this">this</span>, <span class="string">'onContentHover'</span>));
+
+            <span class="comment">// do not bubble down click events into content container</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">bind</span>(<span class="string">'click.scrollbar'</span>, <span class="this">this</span>.<span class="variable">preventClickBubbling</span>);
+            <span class="this">this</span>.<span class="variable">handleContainer</span>.<span class="variable">bind</span>(<span class="string">'click.scrollbar'</span>, <span class="this">this</span>.<span class="variable">preventClickBubbling</span>);
+            <span class="this">this</span>.<span class="variable">handleArrows</span>.<span class="variable">bind</span>(<span class="string">'click.scrollbar'</span>, <span class="this">this</span>.<span class="variable">preventClickBubbling</span>);
+        },
+
+
+        <span class="comment">//</span>
+        <span class="comment">// get mouse position helper</span>
+        <span class="comment">//</span>
+        <span class="variable">mousePosition</span>: <span class="keyword">function</span>(<span class="variable">ev</span>) {
+            <span class="keyword">return</span> <span class="variable">ev</span>.<span class="variable">pageY</span> || (<span class="variable">ev</span>.<span class="variable">clientY</span> + (<span class="variable">document</span>.<span class="variable">documentElement</span>.<span class="variable">scrollTop</span> || <span class="variable">document</span>.<span class="variable">body</span>.<span class="variable">scrollTop</span>)) || <span class="number integer">0</span>;
+        },
+
+
+
+        <span class="comment">// ---------- event handler ---------------------------------------------------------------</span>
+
+        <span class="comment">//</span>
+        <span class="comment">// start moving of handle</span>
+        <span class="comment">//</span>
+        <span class="variable">startOfHandleMove</span>: <span class="keyword">function</span>(<span class="variable">ev</span>){
+            <span class="variable">ev</span>.<span class="variable">preventDefault</span>();
+            <span class="variable">ev</span>.<span class="variable">stopPropagation</span>();
+
+            <span class="comment">// set start position of mouse</span>
+            <span class="this">this</span>.<span class="variable">mouse</span>.<span class="variable">start</span> = <span class="this">this</span>.<span class="variable">mousePosition</span>(<span class="variable">ev</span>);
+
+            <span class="comment">// set start position of handle</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">start</span> = <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span>;
+
+            <span class="comment">// bind mousemove- and mouseout-event on document (binding it to document allows having a mousepointer outside handle while moving)</span>
+            $(<span class="variable">document</span>).<span class="variable">bind</span>(<span class="string">'mousemove.handle'</span>, $.<span class="variable">proxy</span>(<span class="this">this</span>, <span class="string">'onHandleMove'</span>)).<span class="variable">bind</span>(<span class="string">'mouseup.handle'</span>, $.<span class="variable">proxy</span>(<span class="this">this</span>, <span class="string">'endOfHandleMove'</span>));
+
+            <span class="comment">// add class for visual change while moving handle</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">addClass</span>(<span class="string">'move'</span>);
+            <span class="this">this</span>.<span class="variable">handleContainer</span>.<span class="variable">addClass</span>(<span class="string">'move'</span>);
+        },
+
+
+        <span class="comment">//</span>
+        <span class="comment">// on moving of handle</span>
+        <span class="comment">//</span>
+        <span class="variable">onHandleMove</span>: <span class="keyword">function</span>(<span class="variable">ev</span>){
+            <span class="variable">ev</span>.<span class="variable">preventDefault</span>();
+
+            <span class="comment">// calculate distance since last fireing of this handler</span>
+            <span class="keyword">var</span> <span class="variable">distance</span> = <span class="this">this</span>.<span class="variable">mousePosition</span>(<span class="variable">ev</span>) - <span class="this">this</span>.<span class="variable">mouse</span>.<span class="variable">start</span>;
+
+            <span class="comment">// calculate new handle position</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> = <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">start</span> + <span class="variable">distance</span>;
+
+            <span class="comment">// update positions</span>
+            <span class="this">this</span>.<span class="variable">setHandlePosition</span>();
+            <span class="this">this</span>.<span class="variable">setContentPosition</span>();
+        },
+
+
+        <span class="comment">//</span>
+        <span class="comment">// end moving of handle</span>
+        <span class="comment">//</span>
+        <span class="variable">endOfHandleMove</span>: <span class="keyword">function</span>(<span class="variable">ev</span>){
+
+            <span class="comment">// remove handle events (which were attached in the startOfHandleMove-method)</span>
+            $(<span class="variable">document</span>).<span class="variable">unbind</span>(<span class="string">'.handle'</span>);
+
+            <span class="comment">// remove class for visual change </span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">removeClass</span>(<span class="string">'move'</span>);
+            <span class="this">this</span>.<span class="variable">handleContainer</span>.<span class="variable">removeClass</span>(<span class="string">'move'</span>);
+        },
+
+
+        <span class="comment">//</span>
+        <span class="comment">// set position of handle</span>
+        <span class="comment">//</span>
+        <span class="variable">setHandlePosition</span>: <span class="keyword">function</span>(){
+
+            <span class="comment">// stay within range [handleTop.min, handleTop.max]</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> = (<span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> &<span class="variable">gt</span>; <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleTop</span>.<span class="variable">max</span>) ? <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleTop</span>.<span class="variable">max</span> : <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span>;
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> = (<span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> &<span class="variable">lt</span>; <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleTop</span>.<span class="variable">min</span>) ? <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleTop</span>.<span class="variable">min</span> : <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span>;
+
+            <span class="this">this</span>.<span class="variable">handle</span>[<span class="number integer">0</span>].<span class="variable">style</span>.<span class="variable">top</span> = <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> + <span class="string">'px'</span>;
+        },
+
+
+        <span class="comment">//</span>
+        <span class="comment">// set position of content</span>
+        <span class="comment">//</span>
+        <span class="variable">setContentPosition</span>: <span class="keyword">function</span>(){
+
+            <span class="comment">// derive position of content from position of handle </span>
+            <span class="this">this</span>.<span class="variable">pane</span>.<span class="variable">top</span> = -<span class="number integer">1</span> * <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleContentRatio</span> * <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span>;
+
+            <span class="this">this</span>.<span class="variable">pane</span>[<span class="number integer">0</span>].<span class="variable">style</span>.<span class="variable">top</span> = <span class="this">this</span>.<span class="variable">pane</span>.<span class="variable">top</span> + <span class="string">'px'</span>;
+        },
+
+
+        <span class="comment">//</span>
+        <span class="comment">// mouse wheel movement</span>
+        <span class="comment">//</span>
+        <span class="variable">onMouseWheel</span>: <span class="keyword">function</span>(<span class="variable">ev</span>, <span class="variable">delta</span>){
+
+            <span class="comment">// calculate new handle position</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> -= <span class="variable">delta</span>;
+
+            <span class="this">this</span>.<span class="variable">setHandlePosition</span>();
+            <span class="this">this</span>.<span class="variable">setContentPosition</span>();
+
+            <span class="comment">// prevent default scrolling of the entire document if handle is within [min, max]-range</span>
+            <span class="keyword">if</span>(<span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> &<span class="variable">gt</span>; <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleTop</span>.<span class="variable">min</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> &<span class="variable">lt</span>; <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleTop</span>.<span class="variable">max</span>){
+                <span class="variable">ev</span>.<span class="variable">preventDefault</span>();
+            }
+        },
+
+
+        <span class="comment">//</span>
+        <span class="comment">// append click handler on handle-container (outside of handle itself) to click up and down the handle </span>
+        <span class="comment">//</span>
+        <span class="variable">onHandleContainerMousedown</span>: <span class="keyword">function</span>(<span class="variable">ev</span>){
+            <span class="variable">ev</span>.<span class="variable">preventDefault</span>();
+
+            <span class="comment">// do nothing if clicked on handle</span>
+            <span class="keyword">if</span>(!$(<span class="variable">ev</span>.<span class="variable">target</span>).<span class="variable">hasClass</span>(<span class="string">'scrollbar-handle-container'</span>)){
+                <span class="keyword">return</span> <span class="variable">false</span>;
+            }
+
+            <span class="comment">// determine direction for handle movement (clicked above or below the handler?)</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">direction</span> = (<span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">offset</span>().<span class="variable">top</span> &<span class="variable">lt</span>; <span class="this">this</span>.<span class="variable">mousePosition</span>(<span class="variable">ev</span>)) ? <span class="number integer">1</span> : -<span class="number integer">1</span>;
+
+            <span class="comment">// set incremental step of handle</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">step</span> = <span class="this">this</span>.<span class="variable">opts</span>.<span class="variable">scrollStep</span>;
+
+            <span class="comment">// stop handle movement on mouseup</span>
+            <span class="keyword">var</span> <span class="variable">that</span> = <span class="this">this</span>;
+            $(<span class="variable">document</span>).<span class="variable">bind</span>(<span class="string">'mouseup.handlecontainer'</span>, <span class="keyword">function</span>(){
+                <span class="variable">clearInterval</span>(<span class="variable">timer</span>);
+                <span class="variable">that</span>.<span class="variable">handle</span>.<span class="variable">unbind</span>(<span class="string">'mouseenter.handlecontainer'</span>);
+                $(<span class="variable">document</span>).<span class="variable">unbind</span>(<span class="string">'mouseup.handlecontainer'</span>);
+            });
+
+            <span class="comment">// stop handle movement when mouse is over handle</span>
+            <span class="comment">//</span>
+            <span class="comment">// TODO: this event is fired by Firefox only. Damn!</span>
+            <span class="comment">//       Right now, I do not know any workaround for this. Mayby I should solve this by collision-calculation of mousepointer and handle</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">bind</span>(<span class="string">'mouseenter.handlecontainer'</span>, <span class="keyword">function</span>(){
+                <span class="variable">clearInterval</span>(<span class="variable">timer</span>);
+            });
+
+            <span class="comment">// repeat handle movement while mousedown</span>
+            <span class="keyword">var</span> <span class="variable">timer</span> = <span class="variable">setInterval</span>($.<span class="variable">proxy</span>(<span class="this">this</span>.<span class="variable">moveHandle</span>, <span class="this">this</span>), <span class="this">this</span>.<span class="variable">opts</span>.<span class="variable">scrollSpeed</span>);
+        },
+
+
+        <span class="comment">//</span>
+        <span class="comment">// append mousedown handler on handle-arrows</span>
+        <span class="comment">//</span>
+        <span class="variable">onArrowsMousedown</span>: <span class="keyword">function</span>(<span class="variable">ev</span>){
+            <span class="variable">ev</span>.<span class="variable">preventDefault</span>();
+
+            <span class="comment">// determine direction for handle movement</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">direction</span> = $(<span class="variable">ev</span>.<span class="variable">target</span>).<span class="variable">hasClass</span>(<span class="string">'scrollbar-handle-up'</span>) ? -<span class="number integer">1</span> : <span class="number integer">1</span>;
+
+            <span class="comment">// set incremental step of handle</span>
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">step</span> = <span class="this">this</span>.<span class="variable">opts</span>.<span class="variable">scrollStepArrows</span>;
+
+            <span class="comment">// add class for visual change while moving handle</span>
+            $(<span class="variable">ev</span>.<span class="variable">target</span>).<span class="variable">addClass</span>(<span class="string">'move'</span>);
+
+            <span class="comment">// repeat handle movement while mousedown</span>
+            <span class="keyword">var</span> <span class="variable">timer</span> = <span class="variable">setInterval</span>($.<span class="variable">proxy</span>(<span class="this">this</span>.<span class="variable">moveHandle</span>, <span class="this">this</span>), <span class="this">this</span>.<span class="variable">opts</span>.<span class="variable">scrollSpeedArrows</span>);
+
+            <span class="comment">// stop handle movement on mouseup</span>
+            $(<span class="variable">document</span>).<span class="variable">one</span>(<span class="string">'mouseup.arrows'</span>, <span class="keyword">function</span>(){
+                <span class="variable">clearInterval</span>(<span class="variable">timer</span>);
+                $(<span class="variable">ev</span>.<span class="variable">target</span>).<span class="variable">removeClass</span>(<span class="string">'move'</span>);
+            });
+        },
+        
+        
+        <span class="comment">//</span>
+        <span class="comment">// move handle by a distinct step while click on arrows or handle-container </span>
+        <span class="comment">//</span>
+        <span class="variable">moveHandle</span>: <span class="keyword">function</span>(){
+            <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> = (<span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">direction</span> === <span class="number integer">1</span>) ? <span class="class">Math</span>.<span class="variable">min</span>(<span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> + <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">step</span>, <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleTop</span>.<span class="variable">max</span>) : <span class="class">Math</span>.<span class="variable">max</span>(<span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> - <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">step</span>, <span class="this">this</span>.<span class="variable">props</span>.<span class="variable">handleTop</span>.<span class="variable">min</span>);
+            <span class="this">this</span>.<span class="variable">handle</span>[<span class="number integer">0</span>].<span class="variable">style</span>.<span class="variable">top</span> = <span class="this">this</span>.<span class="variable">handle</span>.<span class="variable">top</span> + <span class="string">'px'</span>;
+
+            <span class="this">this</span>.<span class="variable">setContentPosition</span>();
+        },
+        
+        
+        <span class="comment">//</span>
+        <span class="comment">// add class attribute on content while interacting with content</span>
+        <span class="comment">//</span>
+        <span class="variable">onContentHover</span>: <span class="keyword">function</span>(<span class="variable">ev</span>){
+            <span class="keyword">if</span>(<span class="variable">ev</span>.<span class="variable">type</span> === <span class="string">'mouseenter'</span>){
+                <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">addClass</span>(<span class="string">'hover'</span>);
+                <span class="this">this</span>.<span class="variable">handleContainer</span>.<span class="variable">addClass</span>(<span class="string">'hover'</span>);
+            } <span class="keyword">else</span> {
+                <span class="this">this</span>.<span class="variable">container</span>.<span class="variable">removeClass</span>(<span class="string">'hover'</span>);
+                <span class="this">this</span>.<span class="variable">handleContainer</span>.<span class="variable">removeClass</span>(<span class="string">'hover'</span>);
+            }
+        },
+        
+        
+        <span class="comment">//</span>
+        <span class="comment">// add class attribute on handle-container while hovering it</span>
+        <span class="comment">//</span>
+        <span class="variable">onHandleContainerHover</span>: <span class="keyword">function</span>(<span class="variable">ev</span>){
+            <span class="keyword">if</span>(<span class="variable">ev</span>.<span class="variable">type</span> === <span class="string">'mouseenter'</span>){
+                <span class="this">this</span>.<span class="variable">handleArrows</span>.<span class="variable">addClass</span>(<span class="string">'hover'</span>);
+            } <span class="keyword">else</span> {
+                <span class="this">this</span>.<span class="variable">handleArrows</span>.<span class="variable">removeClass</span>(<span class="string">'hover'</span>);
+            }
+        },
+        
+        
+        <span class="comment">//</span>
+        <span class="comment">// do not bubble down to avoid triggering click events attached within the container</span>
+        <span class="comment">//</span>
+        <span class="variable">preventClickBubbling</span>: <span class="keyword">function</span>(<span class="variable">ev</span>){
+            <span class="variable">ev</span>.<span class="variable">stopPropagation</span>();
+        }
+    };
+
+
+    <span class="comment">// ----- helpers ------------------------------------------------------------------------------</span>
+
+    <span class="comment">//</span>
+    <span class="comment">// determine content height</span>
+    <span class="comment">//</span>
+    $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">contentHeight</span> = <span class="keyword">function</span>(<span class="variable">elem</span>){
+
+      <span class="comment">// wrap content temporarily to meassure content height.</span>
+      <span class="comment">// as we have to wrap the items with an overflowed container, we set it here the same way.</span>
+      
+      <span class="comment">// wrapper container need to have an overflow set to 'hidden' to respect margin collapsing</span>
+      <span class="keyword">var</span> <span class="variable">content</span> = <span class="variable">elem</span>.<span class="variable">children</span>();
+      <span class="keyword">var</span> <span class="variable">height</span> = <span class="variable">content</span>.<span class="variable">wrapAll</span>(<span class="string">'&lt;div/&gt;'</span>).<span class="variable">parent</span>().<span class="variable">css</span>({<span class="variable">overflow</span>:<span class="string">'hidden'</span>}).<span class="variable">height</span>();   
+
+      <span class="comment">// unwrap as elem was passed by reference!</span>
+      <span class="variable">content</span>.<span class="variable">unwrap</span>(<span class="string">'&lt;div/&gt;'</span>);                                   
+
+      <span class="keyword">return</span> <span class="variable">height</span>;
+    };
+
+    <span class="comment">//</span>
+    <span class="comment">// fix margin collapsing</span>
+    <span class="comment">//</span>
+    $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">fixMarginCollapsing</span> = <span class="keyword">function</span>(<span class="variable">container</span>){
+      <span class="keyword">if</span>(<span class="variable">container</span>.<span class="variable">css</span>(<span class="string">'overflow'</span>) == <span class="string">'visible'</span>){
+        <span class="variable">container</span>.<span class="variable">find</span>(<span class="string">':first-child'</span>).<span class="variable">css</span>(<span class="string">'margin-top'</span>, <span class="number integer">0</span>);
+        <span class="variable">container</span>.<span class="variable">find</span>(<span class="string">':last-child'</span>).<span class="variable">css</span>(<span class="string">'margin-bottom'</span>, <span class="number integer">0</span>);
+      }
+    };
+
+
+    <span class="comment">//</span>
+    <span class="comment">// ----- default css ---------------------------------------------------------------------</span>
+    <span class="comment">//</span>
+    $.<span class="variable">fn</span>.<span class="variable">defaultCss</span> = <span class="keyword">function</span>(<span class="variable">styles</span>){
+
+        <span class="comment">// 'not-defined'-values</span>
+        <span class="keyword">var</span> <span class="variable">notdef</span> = {
+            <span class="string">'right'</span>:    <span class="string">'auto'</span>,
+            <span class="string">'left'</span>:     <span class="string">'auto'</span>,
+            <span class="string">'top'</span>:      <span class="string">'auto'</span>,
+            <span class="string">'bottom'</span>:   <span class="string">'auto'</span>,
+            <span class="string">'position'</span>: <span class="string">'static'</span>
+        };
+
+        <span class="comment">// loop through all style definitions and check for a definition already set by css. </span>
+        <span class="comment">// if no definition is found, apply the default css definition</span>
+        <span class="keyword">return</span> <span class="this">this</span>.<span class="variable">each</span>(<span class="keyword">function</span>(){
+            <span class="keyword">var</span> <span class="variable">elem</span> = $(<span class="this">this</span>);
+            <span class="keyword">for</span>(<span class="keyword">var</span> <span class="variable">style</span> <span class="keyword">in</span> <span class="variable">styles</span>){
+                <span class="keyword">if</span>(<span class="variable">elem</span>.<span class="variable">css</span>(<span class="variable">style</span>) === <span class="variable">notdef</span>[<span class="variable">style</span>]){
+                    <span class="variable">elem</span>.<span class="variable">css</span>(<span class="variable">style</span>, <span class="variable">styles</span>[<span class="variable">style</span>]);
+                }
+            }
+        });
+    };
+
+
+    <span class="comment">//</span>
+    <span class="comment">// ----- mousewheel event ---------------------------------------------------------------------</span>
+    <span class="comment">// based on jquery.mousewheel.js from Brandon Aaron (brandon.aaron@gmail.com || http://brandonaaron.net)</span>
+    <span class="comment">//</span>
+    $.<span class="variable">event</span>.<span class="variable">special</span>.<span class="variable">mousewheel</span> = {
+
+        <span class="variable">setup</span>: <span class="keyword">function</span>(){
+            <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">addEventListener</span>){
+                <span class="this">this</span>.<span class="variable">addEventListener</span>(<span class="string">'mousewheel'</span>, $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">mouseWheelHandler</span>, <span class="variable">false</span>);
+                <span class="this">this</span>.<span class="variable">addEventListener</span>(<span class="string">'DOMMouseScroll'</span>, $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">mouseWheelHandler</span>, <span class="variable">false</span>);
+            } <span class="keyword">else</span> {
+                <span class="this">this</span>.<span class="variable">onmousewheel</span> = $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">mouseWheelHandler</span>;
+            }
+        },
+
+        <span class="variable">teardown</span>: <span class="keyword">function</span>(){
+            <span class="keyword">if</span> (<span class="this">this</span>.<span class="variable">removeEventListener</span>){
+                <span class="this">this</span>.<span class="variable">removeEventListener</span>(<span class="string">'mousewheel'</span>, $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">mouseWheelHandler</span>, <span class="variable">false</span>);
+                <span class="this">this</span>.<span class="variable">removeEventListener</span>(<span class="string">'DOMMouseScroll'</span>, $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">mouseWheelHandler</span>, <span class="variable">false</span>);
+            } <span class="keyword">else</span> {
+                <span class="this">this</span>.<span class="variable">onmousewheel</span> = <span class="keyword">null</span>;
+            }
+        }
+    };
+
+
+    $.<span class="variable">fn</span>.<span class="variable">extend</span>({
+        <span class="variable">mousewheel</span>: <span class="keyword">function</span>(<span class="variable">fn</span>){
+            <span class="keyword">return</span> <span class="variable">fn</span> ? <span class="this">this</span>.<span class="variable">bind</span>(&<span class="variable">quot</span>;<span class="variable">mousewheel</span>&<span class="variable">quot</span>;, <span class="variable">fn</span>) : <span class="this">this</span>.<span class="variable">trigger</span>(&<span class="variable">quot</span>;<span class="variable">mousewheel</span>&<span class="variable">quot</span>;);
+        },
+
+        <span class="variable">unmousewheel</span>: <span class="keyword">function</span>(<span class="variable">fn</span>){
+            <span class="keyword">return</span> <span class="this">this</span>.<span class="variable">unbind</span>(&<span class="variable">quot</span>;<span class="variable">mousewheel</span>&<span class="variable">quot</span>;, <span class="variable">fn</span>);
+        }
+    });
+
+
+    $.<span class="variable">fn</span>.<span class="variable">scrollbar</span>.<span class="variable">mouseWheelHandler</span> = <span class="keyword">function</span>(<span class="variable">event</span>) {
+        <span class="keyword">var</span> <span class="variable">orgEvent</span> = <span class="variable">event</span> || <span class="variable">window</span>.<span class="variable">event</span>,
+            <span class="variable">args</span> = [].<span class="variable">slice</span>.<span class="variable">call</span>(<span class="variable">arguments</span>, <span class="number integer">1</span>),
+            <span class="variable">delta</span> = <span class="number integer">0</span>,
+            <span class="variable">returnValue</span> = <span class="variable">true</span>,
+            <span class="variable">deltaX</span> = <span class="number integer">0</span>,
+            <span class="variable">deltaY</span> = <span class="number integer">0</span>;
+
+        <span class="variable">event</span> = $.<span class="variable">event</span>.<span class="variable">fix</span>(<span class="variable">orgEvent</span>);
+        <span class="variable">event</span>.<span class="variable">type</span> = &<span class="variable">quot</span>;<span class="variable">mousewheel</span>&<span class="variable">quot</span>;;
+
+        <span class="comment">// Old school scrollwheel delta</span>
+        <span class="keyword">if</span>(<span class="variable">event</span>.<span class="variable">wheelDelta</span>){
+            <span class="variable">delta</span> = <span class="variable">event</span>.<span class="variable">wheelDelta</span> / <span class="number integer">120</span>;
+        }
+        <span class="keyword">if</span>(<span class="variable">event</span>.<span class="variable">detail</span>){
+            <span class="variable">delta</span> = -<span class="variable">event</span>.<span class="variable">detail</span> / <span class="number integer">3</span>;
+        }
+
+        <span class="comment">// Gecko</span>
+        <span class="keyword">if</span>(<span class="variable">orgEvent</span>.<span class="variable">axis</span> !== <span class="variable">undefined</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="variable">orgEvent</span>.<span class="variable">axis</span> === <span class="variable">orgEvent</span>.<span class="class">HORIZONTAL_AXIS</span>){
+            <span class="variable">deltaY</span> = <span class="number integer">0</span>;
+            <span class="variable">deltaX</span> = -<span class="number integer">1</span> * <span class="variable">delta</span>;
+        }
+
+        <span class="comment">// Webkit</span>
+        <span class="keyword">if</span>(<span class="variable">orgEvent</span>.<span class="variable">wheelDeltaY</span> !== <span class="variable">undefined</span>){
+            <span class="variable">deltaY</span> = <span class="variable">orgEvent</span>.<span class="variable">wheelDeltaY</span> / <span class="number integer">120</span>;
+        }
+        <span class="keyword">if</span>(<span class="variable">orgEvent</span>.<span class="variable">wheelDeltaX</span> !== <span class="variable">undefined</span>){
+            <span class="variable">deltaX</span> = -<span class="number integer">1</span> * <span class="variable">orgEvent</span>.<span class="variable">wheelDeltaX</span> / <span class="number integer">120</span>;
+        }
+
+        <span class="comment">// Add event and delta to the front of the arguments</span>
+        <span class="variable">args</span>.<span class="variable">unshift</span>(<span class="variable">event</span>, <span class="variable">delta</span>, <span class="variable">deltaX</span>, <span class="variable">deltaY</span>);
+
+        <span class="keyword">return</span> $.<span class="variable">event</span>.<span class="variable">handle</span>.<span class="variable">apply</span>(<span class="this">this</span>, <span class="variable">args</span>);
+    };
+    
+})(<span class="variable">jQuery</span>, <span class="variable">document</span>);  <span class="comment">// inject global jQuery object</span>
+</code></pre>
+</td>
+</tr><tr class="filename"><td><h2 id="css/scrollbar.css"><a href="#">scrollbar.css</a></h2></td><td>css/scrollbar.css</td></tr><tr class="code">
+<td class="docs">
+<p> ---------- basic theme: these are the most necessary styles --------------------------------- </p>
+</td>
+<td class="code">
+<pre><code>.<span class="variable">scrollbar</span>-<span class="variable">pane</span> {
+    <span class="variable">margin</span>-<span class="variable">right</span>: <span class="variable">px</span>;
+}
+
+.<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">container</span> {
+    <span class="variable">background</span>: #<span class="class">EEE</span>;
+    <span class="variable">width</span>: <span class="variable">px</span>;
+}
+
+.<span class="variable">scrollbar</span>-<span class="variable">handle</span> {
+    <span class="variable">width</span>: <span class="variable">px</span>;
+    <span class="variable">background</span>: #<span class="number integer">999</span>;
+}
+
+.<span class="variable">scrollbar</span>-<span class="variable">handle</span>:<span class="variable">hover</span> {
+    <span class="variable">background</span>: #<span class="number integer">666</span>;
+}
+
+.<span class="variable">scrollbar</span>-<span class="variable">handle</span>.<span class="variable">move</span> {
+    <span class="variable">background</span>: #<span class="number integer">111</span>;
+}
+
+.<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">up</span> {
+    <span class="variable">width</span>: <span class="variable">px</span>;
+    <span class="variable">height</span>: <span class="variable">px</span>;
+    <span class="variable">background</span>: #<span class="class">DDD</span>;
+}
+
+.<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">up</span>:<span class="variable">hover</span> {
+    <span class="variable">background</span>: #<span class="number integer">666</span>;
+}
+
+.<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">down</span> {
+    <span class="variable">width</span>: <span class="variable">px</span>;
+    <span class="variable">height</span>: <span class="variable">px</span>;
+    <span class="variable">background</span>: #<span class="class">DDD</span>;
+}
+
+.<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">down</span>:<span class="variable">hover</span> {
+    <span class="variable">background</span>: #<span class="number integer">666</span>;
+}</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p> ---------- simple theme --------------------------------------------------------------------- </p>
+</td>
+<td class="code">
+<pre><code>.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">pane</span> {
+    <span class="variable">margin</span>-<span class="variable">right</span>: <span class="variable">px</span>;
+}
+
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">container</span> {
+    <span class="variable">background</span>: #<span class="class">EEE</span>;
+    <span class="variable">width</span>: <span class="variable">px</span>;
+}
+
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">container</span>.<span class="variable">hover</span>,
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">container</span>.<span class="variable">move</span> {
+    <span class="variable">background</span>: #<span class="class">E6E6E6</span>;
+}
+
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>, 
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">up</span>, 
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">down</span> {
+	<span class="variable">background</span>-<span class="variable">image</span>: <span class="variable">url</span>(<span class="variable">data</span>:<span class="variable">image</span>/<span class="variable">png</span>;<span class="variable">base64</span>,<span class="variable">iVBORw0KGgoAAAANSUhEUgAAAC0AAAAHCAYAAACcLcTKAAAAMklEQVR42mP4TwRgIBJQwwyGQWkZrR0</span>+<span class="class">GDxPUO9gC2Gi3UNpqFArpIdFUh3UGZqY0gwAQe422HjkstgAAAAASUVORK5CYII</span>=);
+	<span class="variable">background</span>-<span class="variable">repeat</span>: <span class="variable">no</span>-<span class="variable">repeat</span>;
+}</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p> handle </p>
+</td>
+<td class="code">
+<pre><code>.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span> {
+    <span class="variable">width</span>: <span class="variable">px</span>;
+    <span class="variable">border</span>: <span class="variable">px</span> <span class="variable">solid</span> #<span class="class">CCC</span>;
+	<span class="variable">background</span>-<span class="variable">color</span>: #<span class="class">CCC</span>;
+	<span class="variable">background</span>-<span class="variable">position</span>: -<span class="variable">px</span> <span class="number integer">50</span>%;
+}
+
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>:<span class="variable">hover</span> {
+    <span class="variable">border</span>: <span class="variable">px</span> <span class="variable">solid</span> #<span class="number integer">666</span>;
+}
+
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>.<span class="variable">move</span> {
+    <span class="variable">border</span>: <span class="variable">px</span> <span class="variable">solid</span> #<span class="number integer">666</span>;
+    <span class="variable">background</span>-<span class="variable">color</span>: #<span class="number integer">999</span>;
+}</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p> arrow up </p>
+</td>
+<td class="code">
+<pre><code>.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">up</span> {
+    <span class="variable">width</span>: <span class="variable">px</span>;
+    <span class="variable">height</span>: <span class="variable">px</span>;
+    <span class="variable">border</span>: <span class="variable">px</span> <span class="variable">solid</span> #<span class="class">CCC</span>;
+    <span class="variable">background</span>-<span class="variable">color</span>: #<span class="class">CCC</span>;
+	<span class="variable">background</span>-<span class="variable">position</span>: -<span class="variable">px</span> <span class="variable">px</span>;
+	<span class="variable">margin</span>-<span class="variable">bottom</span>: <span class="variable">px</span>;
+}
+
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">up</span>.<span class="variable">hover</span>,
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">up</span>:<span class="variable">hover</span> {
+    <span class="variable">border</span>: <span class="variable">px</span> <span class="variable">solid</span> #<span class="number integer">666</span>;
+}
+
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">up</span>.<span class="variable">move</span> {
+    <span class="variable">background</span>-<span class="variable">color</span>: #<span class="number integer">999</span>;
+}</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p> arrow down </p>
+</td>
+<td class="code">
+<pre><code>.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">down</span> {
+    <span class="variable">width</span>: <span class="variable">px</span>;
+    <span class="variable">height</span>: <span class="variable">px</span>;
+    <span class="variable">border</span>: <span class="variable">px</span> <span class="variable">solid</span> #<span class="class">CCC</span>;
+    <span class="variable">background</span>-<span class="variable">color</span>: #<span class="class">CCC</span>;
+	<span class="variable">background</span>-<span class="variable">position</span>: <span class="variable">px</span> <span class="variable">px</span>;
+	<span class="variable">margin</span>-<span class="variable">top</span>: <span class="variable">px</span>;
+}
+
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">down</span>.<span class="variable">hover</span>,
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">down</span>:<span class="variable">hover</span> {
+    <span class="variable">border</span>: <span class="variable">px</span> <span class="variable">solid</span> #<span class="number integer">666</span>;
+}
+
+.<span class="variable">simple</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">down</span>.<span class="variable">move</span> {
+    <span class="variable">background</span>-<span class="variable">color</span>: #<span class="number integer">999</span>;
+}</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p> ---------- fff theme ----------------------------------------------------------------- </p>
+</td>
+<td class="code">
+<pre><code><span class="variable">ul</span>.<span class="variable">fff</span> {
+    <span class="variable">padding</span>: <span class="number integer">0</span>;
+}
+
+.<span class="variable">fff</span> .<span class="variable">scrollbar</span>-<span class="variable">pane</span> {
+    <span class="variable">margin</span>-<span class="variable">right</span>: <span class="variable">px</span>;
+}
+
+.<span class="variable">fff</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">container</span> {
+    <span class="variable">background</span>: #<span class="class">EEE</span>;
+    <span class="variable">width</span>: <span class="variable">px</span>;
+}
+
+.<span class="variable">fff</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span> {
+    <span class="variable">width</span>: <span class="variable">px</span>;
+	<span class="variable">background</span>-<span class="variable">color</span>: #<span class="class">CCC</span>;
+}
+
+.<span class="variable">fff</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>:<span class="variable">hover</span> {
+    <span class="variable">background</span>-<span class="variable">color</span>: #<span class="number integer">999</span>;
+}
+
+.<span class="variable">fff</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>.<span class="variable">move</span> {
+    <span class="variable">background</span>-<span class="variable">color</span>: #<span class="number integer">666</span>;
+}
+
+.<span class="variable">fff</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">up</span> {
+    <span class="variable">width</span>: <span class="variable">px</span>;
+    <span class="variable">height</span>: <span class="variable">px</span>;
+}
+
+.<span class="variable">fff</span> .<span class="variable">scrollbar</span>-<span class="variable">handle</span>-<span class="variable">down</span> {
+    <span class="variable">width</span>: <span class="variable">px</span>;
+    <span class="variable">height</span>: <span class="variable">px</span>;
+}
+
+</code></pre>
+</td>
+</tr>	</body>
+</html></tbody></table>

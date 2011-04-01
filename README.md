@@ -20,8 +20,15 @@ Running the tests:
     > java -jar lib/JsTestDriver-1.2.2.jar --config scroll.conf --tests all
 
 
+## Documentation
 
+A neat [documentation][docu] is done with [dox][dox] documentation generator:
+
+    > npm install dox
+    > dox --title jquery-scroll jquery.scroll.js css/scrollbar.css > docs/jquery.scroll.html
 
 
 
 [jstd]: http://code.google.com/p/js-test-driver/ "project page of js-test-driver"
+[dox]: https://github.com/visionmedia/dox "JavaScript documentation generator for node using markdown and jsdoc"
+[docu]: https://thomd.github.com/jquery-scroll/docs/jquery.scroll.html "jquery-scroll Documentation"
