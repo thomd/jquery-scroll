@@ -67,49 +67,48 @@
         //
         return this.each(function(){
 
-            var container = $(this), 
+            var container = $(this)
                 
                 // properties
-                props = {
+              , props = {
                     arrows: options.arrows
                 };
 
-            // set new container height if explicitly set by an option
-            if(options.containerHeight){
+            // set container height explicitly if given by an option
+            if(options.containerHeight != 'auto'){
                 container.height(options.containerHeight);
             }
-
+            
             // save container height in properties
             props.containerHeight = container.height();
 
-            // save inner content height in properties. This is the height of all elements within the container.
-            props.contentHeight = 0;
-            container.children().each(function(){
-                props.contentHeight += $(this).outerHeight();
-            });
+            // save content height in properties
+            props.contentHeight = $.fn.scrollbar.contentHeight(container);
 
             // if the content height is lower than the container height, do nothing and return.
             if(props.contentHeight <= props.containerHeight){
                 return true;
             }
 
-            // create scrollbar object
+            // create a new scrollbar object 
             var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
             
-            // build, initialize & append events
-            scrollbar.buildHtml();
-            scrollbar.initHandle();
-            scrollbar.appendEvents();
+            // build HTML, initialize Handle and append Events
+            scrollbar.buildHtml().initHandle().appendEvents();
         });
     };
 
 
 
-    //
-    // default options
+    // # default options
+    // 
     //
     $.fn.scrollbar.defaults = {
-        containerHeight:   null,       // height of content container. If set to null, the current height before DOM manipulation is used
+        
+        // ### containerHeight `Number` or `'auto'` 
+        //
+        // height of content container. If set to `'auto'`, the naturally rendered height is used
+        containerHeight:   'auto',
         
         arrows:            true,       // render up- and down-arrows
         handleHeight:      'auto',     // height of handle [px || 'auto']. If set to 'auto', the height will be calculated proportionally to the container-content height.
@@ -234,7 +233,9 @@
             this.handleArrows.css({
                 'position': 'absolute',
                 'cursor':   'pointer'
-            });            
+            });
+            
+            return this;            
         },
 
 
@@ -248,7 +249,7 @@
            // height of handle
             this.props.handleHeight = this.opts.handleHeight == 'auto' ? Math.max(Math.ceil(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight), this.opts.handleMinHeight) : this.opts.handleHeight;
             this.handle.height(this.props.handleHeight);
-            
+
             // if handle has a border (always be aware of the css box-model), we need to correct the handle height.
             this.handle.height(2 * this.handle.height() - this.handle.outerHeight(true));
 
@@ -263,6 +264,8 @@
 
             // initial position of handle at top
             this.handle.top = 0;
+            
+            return this;
         },
 
 
@@ -293,6 +296,8 @@
             this.handle.bind('click.scrollbar', this.preventClickBubbling);
             this.handleContainer.bind('click.scrollbar', this.preventClickBubbling);
             this.handleArrows.bind('click.scrollbar', this.preventClickBubbling);
+            
+            return this;
         },
 
 
@@ -514,9 +519,30 @@
     };
 
 
+    // ----- helpers ------------------------------------------------------------------------------
 
+    //
+    // determine content height
+    //
+    $.fn.scrollbar.contentHeight = function(elem){
+
+      // wrap content temporarily to meassure content height.
+      // as we have to wrap the items with an overflowed container, we set it here the same way.
+      
+      // wrapper container need to have an overflow set to 'hidden' to respect margin collapsing
+      var content = elem.children();
+      var height = content.wrapAll('<div/>').parent().css({overflow:'hidden'}).height();   
+
+      // unwrap as elem was passed by reference!
+      content.unwrap('<div/>');                                   
+
+      return height;
+    };
+
+
+    //
     // ----- default css ---------------------------------------------------------------------
-
+    //
     $.fn.defaultCss = function(styles){
 
         // 'not-defined'-values
@@ -540,11 +566,11 @@
         });
     };
 
+
     //
     // ----- mousewheel event ---------------------------------------------------------------------
     // based on jquery.mousewheel.js from Brandon Aaron (brandon.aaron@gmail.com || http://brandonaaron.net)
     //
-
     $.event.special.mousewheel = {
 
         setup: function(){

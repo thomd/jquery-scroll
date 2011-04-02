@@ -22,7 +22,7 @@ Running the tests:
 
 ## Documentation
 
-A neat [documentation][docu] is done with [dox][dox] documentation generator:
+A neat [documentation][docu] is done with the [dox][dox] documentation generator:
 
     > npm install dox
     > dox --title jquery-scroll jquery.scroll.js css/scrollbar.css > docs/jquery.scroll.html
