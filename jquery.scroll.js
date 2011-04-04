@@ -7,6 +7,7 @@
  * @author     Thomas Duerr, me@thomd.net
  * @date       03.2010
  * @requires   jquery v1.4.2 
+ * @version    0.3
  *
  *
  * Usage:
@@ -112,7 +113,7 @@
         
         arrows:            true,       // render up- and down-arrows
         handleHeight:      'auto',     // height of handle [px || 'auto']. If set to 'auto', the height will be calculated proportionally to the container-content height.
-        handleMinHeight:   30,         // min-height of handle [px]. This property is only used if handleHeight is set to 'auto'
+        handleMinHeight:   30,         // min-height of handle [px]. This property will only be used if handleHeight is set to 'auto'
         
         scrollSpeed:       50,         // speed of handle while mousedown on arrows [milli sec]
         scrollStep:        20,         // handle increment between two mousedowns on arrows [px]
@@ -246,7 +247,7 @@
             this.props.handleContainerHeight = this.handleContainer.height();
             this.props.contentHeight = this.pane.height();
 
-           // height of handle
+            // height of handle
             this.props.handleHeight = this.opts.handleHeight == 'auto' ? Math.max(Math.ceil(this.props.containerHeight * this.props.handleContainerHeight / this.props.contentHeight), this.opts.handleMinHeight) : this.opts.handleHeight;
             this.handle.height(this.props.handleHeight);
 
