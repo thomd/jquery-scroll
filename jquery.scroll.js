@@ -1,60 +1,60 @@
 /*jslint eqeqeq: true, regexp: true */
 /*global document, window, setInterval, clearInterval, handler, jQuery */
 
-/*
- * Scrollbar - a jQuery plugin for custom scrollbars
- *
- * @author     Thomas Duerr, me@thomd.net
- * @date       03.2010
- * @requires   jquery v1.4.2 
- * @version    0.3
- *
- *
- * Usage:
- *
- *    Append scrollbar to an arbitrary container with overflowed content:
- *
- *         $('selector').scrollbar();
- *
- *
- *    Append scrollbar without arrows on top/bottom:
- *
- *         $('selector').scrollbar({
- *            arrows: false
- *         });
- *
- *
- *
- * A vertical scrollbar is based on the following box model:
- *
- *    +----------------------------------+
- *    |            <----------------------------- content container
- *    |  +-----------------+  +------+   |
- *    |  |                 |  |   <-------------- handle arrow up
- *    |  |                 |  |      |   |
- *    |  |                 |  +------+   |
- *    |  |                 |  | +--+ |   |
- *    |  |                 |  | |  | |   |
- *    |  |                 |  | | <-------------- handle
- *    |  |                 |  | |  | |   |
- *    |  |                 |  | |  | |   |
- *    |  |                 |  | |  | |   |
- *    |  |                 |  | +--+ |   |
- *    |  |                 |  |      |   |
- *    |  |                 |  |   <-------------- handle container
- *    |  |                 |  |      |   |
- *    |  |         <----------------------------- pane
- *    |  |                 |  |      |   |
- *    |  |                 |  |      |   |
- *    |  |                 |  +------+   |
- *    |  |                 |  |      |   |
- *    |  |                 |  |   <-------------- handle arrow down
- *    |  +-----------------+  +------+   |
- *    |                                  |
- *    +----------------------------------+
- *
- *
- */
+//
+//     jquery.scroll.js 0.3
+//     a jQuery plugin for custom scrollbars
+//
+//     Thomas Duerr, me@thomd.net
+//     03.2010
+//     requires   jquery v1.4.2 
+//
+//
+// Usage:
+//
+//    Append scrollbar to an arbitrary container with overflowed content:
+//
+//         $('selector').scrollbar();
+//
+//
+//    Append scrollbar without arrows on top/bottom:
+//
+//         $('selector').scrollbar({
+//            arrows: false
+//         });
+//
+//
+//
+// A vertical scrollbar is based on the following box model:
+//
+//        +----------------------------------+
+//        |            <----------------------------- content container
+//        |  +-----------------+  +------+   |
+//        |  |                 |  |   <-------------- handle arrow up
+//        |  |                 |  |      |   |
+//        |  |                 |  +------+   |
+//        |  |                 |  | +--+ |   |
+//        |  |                 |  | |  | |   |
+//        |  |                 |  | | <-------------- handle
+//        |  |                 |  | |  | |   |
+//        |  |                 |  | |  | |   |
+//        |  |                 |  | |  | |   |
+//        |  |                 |  | +--+ |   |
+//        |  |                 |  |      |   |
+//        |  |                 |  |   <-------------- handle container
+//        |  |                 |  |      |   |
+//        |  |         <----------------------------- pane
+//        |  |                 |  |      |   |
+//        |  |                 |  |      |   |
+//        |  |                 |  +------+   |
+//        |  |                 |  |      |   |
+//        |  |                 |  |   <-------------- handle arrow down
+//        |  +-----------------+  +------+   |
+//        |                                  |
+//        +----------------------------------+
+//
+//
+//
 (function($, document){
 
     $.fn.scrollbar = function(opts){
