@@ -7,7 +7,7 @@
 //
 //     Thomas Duerr, me@thomd.net
 //     03.2010
-//     requires   jquery v1.4.2 
+//     requires   jquery v1.4.2
 //
 //
 // Usage:
@@ -62,14 +62,14 @@
         // Extend default options
         var options = $.extend({}, $.fn.scrollbar.defaults, opts);
 
-        
+
         //
         // append scrollbar to selected overflowed containers and return jquery object for chainability
         //
         return this.each(function(){
 
             var container = $(this)
-                
+
                 // properties
               , props = {
                     arrows: options.arrows
@@ -79,7 +79,7 @@
             if(options.containerHeight != 'auto'){
                 container.height(options.containerHeight);
             }
-            
+
             // save container height in properties
             props.containerHeight = container.height();
 
@@ -91,9 +91,9 @@
                 return true;
             }
 
-            // create a new scrollbar object 
+            // create a new scrollbar object
             var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
-            
+
             // build HTML, initialize Handle and append Events
             scrollbar.buildHtml().initHandle().appendEvents();
         });
@@ -102,22 +102,22 @@
 
 
     // # default options
-    // 
+    //
     //
     $.fn.scrollbar.defaults = {
-        
-        // ### containerHeight `Number` or `'auto'` 
+
+        // ### containerHeight `Number` or `'auto'`
         //
         // height of content container. If set to `'auto'`, the naturally rendered height is used
         containerHeight:   'auto',
-        
+
         arrows:            true,       // render up- and down-arrows
         handleHeight:      'auto',     // height of handle [px || 'auto']. If set to 'auto', the height will be calculated proportionally to the container-content height.
         handleMinHeight:   30,         // min-height of handle [px]. This property will only be used if handleHeight is set to 'auto'
-        
+
         scrollSpeed:       50,         // speed of handle while mousedown on arrows [milli sec]
         scrollStep:        20,         // handle increment between two mousedowns on arrows [px]
-        
+
         scrollSpeedArrows: 40,         // speed of handle while mousedown within the handle container [milli sec]
         scrollStepArrows:  3           // handle increment between two mousedowns within the handle container [px]
     };
@@ -171,7 +171,7 @@
         //
         buildHtml: function(){
 
-            // build new DOM nodes 
+            // build new DOM nodes
             this.container.children().wrapAll('<div class="scrollbar-pane"/>');
             this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle"/></div>');
             if(this.props.arrows){
@@ -235,8 +235,8 @@
                 'position': 'absolute',
                 'cursor':   'pointer'
             });
-            
-            return this;            
+
+            return this;
         },
 
 
@@ -265,7 +265,7 @@
 
             // initial position of handle at top
             this.handle.top = 0;
-            
+
             return this;
         },
 
@@ -297,7 +297,7 @@
             this.handle.bind('click.scrollbar', this.preventClickBubbling);
             this.handleContainer.bind('click.scrollbar', this.preventClickBubbling);
             this.handleArrows.bind('click.scrollbar', this.preventClickBubbling);
-            
+
             return this;
         },
 
@@ -361,7 +361,7 @@
             // remove handle events (which were attached in the startOfHandleMove-method)
             $(document).unbind('.handle');
 
-            // remove class for visual change 
+            // remove class for visual change
             this.handle.removeClass('move');
             this.handleContainer.removeClass('move');
         },
@@ -385,7 +385,7 @@
         //
         setContentPosition: function(){
 
-            // derive position of content from position of handle 
+            // derive position of content from position of handle
             this.pane.top = -1 * this.props.handleContentRatio * this.handle.top;
 
             this.pane[0].style.top = this.pane.top + 'px';
@@ -411,7 +411,7 @@
 
 
         //
-        // append click handler on handle-container (outside of handle itself) to click up and down the handle 
+        // append click handler on handle-container (outside of handle itself) to click up and down the handle
         //
         onHandleContainerMousedown: function(ev){
             ev.preventDefault();
@@ -472,10 +472,10 @@
                 $(ev.target).removeClass('move');
             });
         },
-        
-        
+
+
         //
-        // move handle by a distinct step while click on arrows or handle-container 
+        // move handle by a distinct step while click on arrows or handle-container
         //
         moveHandle: function(){
             this.handle.top = (this.handle.direction === 1) ? Math.min(this.handle.top + this.handle.step, this.props.handleTop.max) : Math.max(this.handle.top - this.handle.step, this.props.handleTop.min);
@@ -483,8 +483,8 @@
 
             this.setContentPosition();
         },
-        
-        
+
+
         //
         // add class attribute on content while interacting with content
         //
@@ -497,8 +497,8 @@
                 this.handleContainer.removeClass('hover');
             }
         },
-        
-        
+
+
         //
         // add class attribute on handle-container while hovering it
         //
@@ -509,8 +509,8 @@
                 this.handleArrows.removeClass('hover');
             }
         },
-        
-        
+
+
         //
         // do not bubble down to avoid triggering click events attached within the container
         //
@@ -563,7 +563,7 @@
             'position': 'static'
         };
 
-        // loop through all style definitions and check for a definition already set by css. 
+        // loop through all style definitions and check for a definition already set by css.
         // if no definition is found, apply the default css definition
         return this.each(function(){
             var elem = $(this);
@@ -651,5 +651,5 @@
 
         return $.event.handle.apply(this, args);
     };
-    
+
 })(jQuery, document);  // inject global jQuery object
