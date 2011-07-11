@@ -5,7 +5,7 @@
 //     jquery.scroll.js 0.3
 //     a jQuery plugin for custom scrollbars
 //
-//     Thomas Duerr, me@thomd.net
+//     Thomas Duerr, me-at-thomd.net
 //     03.2010
 //     requires   jquery v1.4.2
 //

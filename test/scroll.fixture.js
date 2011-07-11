@@ -2,11 +2,10 @@ if (!jstestdriver) {
   jstestdriver = {};
 }
 
+jstestdriver.fixtures = function(){
 
-jstestdriver.Fixture = function() {
-
-  /*:DOC += 
-  <div class="scroll" style="height:100px;">
+  /*:DOC +=
+  <div id="fixture_1" style="height:100px;">
     <div>1</div>
     <div>2</div>
     <div>3</div>
@@ -30,8 +29,8 @@ jstestdriver.Fixture = function() {
   </div>
   */
 
-  /*:DOC += 
-  <div class="visible">
+  /*:DOC +=
+  <div id="fixture_2">
     <div>1</div>
     <div>2</div>
     <div>3</div>
@@ -54,9 +53,14 @@ jstestdriver.Fixture = function() {
     <div>20</div>
   </div>
   */
-  
+
   return {
-    scroll: $('.scroll'),
-    visible: $('.visible'),
+
+    // an block element with block elements inside and a fixed height of 100px
+    fixture_1: $('#fixture_1'),
+
+    // an block element with block elements inside and a natural flowed height
+    fixture_2: $('#fixture_2')
   };
 };
+
