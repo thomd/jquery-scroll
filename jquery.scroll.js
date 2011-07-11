@@ -525,27 +525,14 @@
     //
     // determine content height
     //
-    $.fn.scrollbar.contentHeight = function(elem){
+    $.fn.scrollbar.contentHeight = function(container){
 
-      // clone and wrap content temporarily and meassure content height within the original context.
+      // inner-wrap content temporarily and meassure content height.
       // wrapper container need to have an overflow set to 'hidden' to respect margin collapsing
-
-
-      // TODO: analyse anlternative which does not require an additional container. a clone may also allow to meassure a non visible element.
-/*
-      var clone = elem.clone().wrapInner('<div/>').find(':first-child');
-      elem.append(clone);
-      var height = clone.css({overflow:'hidden'}).height();
-      clone.remove();
-
+      var wrapper = container.wrapInner('<div/>').find(':first');
+      var height = wrapper.css({overflow:'hidden'}).height();
+      wrapper.replaceWith(wrapper.contents());
       return height;
-*/
-      var content = elem.wrapInner('<div/>');
-      var height = elem.find(':first').css({overflow:'hidden'}).height();
-
-      return height;
-
-      // FIXME: manipulating the DOM is not the resposibility of $.fn.scrollbar.contentHeight()
     };
 
 

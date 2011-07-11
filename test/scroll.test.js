@@ -49,6 +49,13 @@ TestCase("ScrollbarGeneratorTest", {
       containerHeight: contentHeight - 1
     });
     assertEquals(1, this.fixture_2.find('.scrollbar-handle').length);
+  },
+
+  testHtmlStructureAfterMeassuringHeight: function(){
+    var before = this.fixture_2.html();
+    this.fixture_2.scrollbar();
+    var after = this.fixture_2.html();
+    assertEquals(before, after);
   }
 });
 
