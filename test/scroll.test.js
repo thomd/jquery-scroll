@@ -11,7 +11,7 @@ TestCase("PluginTest", {
 //
 // test generation of html nodes
 //
-TestCase("ScrollbarGeneratorTest", {
+TestCase("HtmlGeneratorTest", {
 
   setUp: function(){
     var fixtures = jstestdriver.fixtures();
