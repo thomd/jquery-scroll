@@ -172,7 +172,7 @@
         buildHtml: function(){
 
             // build new DOM nodes
-            this.container.children().wrapAll('<div class="scrollbar-pane"/>');
+            this.container.wrapInner('<div class="scrollbar-pane"/>');
             this.container.append('<div class="scrollbar-handle-container"><div class="scrollbar-handle"/></div>');
             if(this.props.arrows){
                 this.container.append('<div class="scrollbar-handle-up"/>').append('<div class="scrollbar-handle-down"/>');
