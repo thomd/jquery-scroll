@@ -67,8 +67,8 @@ TestCase("OptionsTest", {
 
   setUp: function(){
     var fixtures = jstestdriver.fixtures();
-    this.fixture_1 = fixtures.fixture_1;
-    this.fixture_2 = fixtures.fixture_2;
+    this.fixture_1 = fixtures.fixture_1;         // scrollbar with container of 100px height
+    this.fixture_2 = fixtures.fixture_2;         // no scrollbar
   },
 
   tearDown: function(){
@@ -118,6 +118,80 @@ TestCase("OptionsTest", {
     assertEquals(0, this.fixture_1.find('.scrollbar-handle-up').length);
     assertEquals(0, this.fixture_1.find('.scrollbar-handle-down').length);
   },
+});
+
+
+//
+// test repainting of scrollbar (in case of dynamic addition of new content)
+//
+TestCase("RepaintTest", {
+
+  setUp: function(){
+    var fixtures = jstestdriver.fixtures();
+    this.fixture_1 = fixtures.fixture_1;         // scrollbar with container of 100px height
+  },
+
+  tearDown: function(){
+    delete this.fixture_1;
+  },
+
+
+  //
+  // if content is doubled, the height of the handle should be half
+  //
+  testDoubleContentHandleHeight: function(){
+
+    // render custom scrollbar
+    var containerHeight = this.fixture_1.height();
+    var contentHeight = $.fn.scrollbar.contentHeight(this.fixture_1);
+    this.fixture_1.scrollbar({
+      handleHeight    : "auto",
+      handleMinHeight : 0,
+      arrows          : false
+    });
+    var handleHeight = Math.ceil(containerHeight * containerHeight / contentHeight);
+
+    // now double content
+    this.fixture_1.find('.scrollbar-pane').children().clone().appendTo('.scrollbar-pane');
+
+    // repaint scrollbar
+    this.fixture_1.scrollbar("repaint");
+
+    // assert height of handle as half of before
+    assertEquals(Math.ceil(handleHeight / 2), this.fixture_1.find('.scrollbar-handle').height());
+  },
+
+
+  //
+  // if content is added, the handles distance to the top should be reduced
+  //
+  testDoubleContentHandlePosition: function(){
+
+    // render custom scrollbar
+    this.fixture_1.scrollbar({
+      handleHeight    : "auto",
+      handleMinHeight : 0,
+      arrows          : false
+    });
+
+    // assert initial handle position: top = 0
+    assertEquals('0px', this.fixture_1.find('.scrollbar-handle').css('top'));
+
+    // scroll down 100px
+    this.fixture_1.scrollbar("scrollto", 100);
+
+    // get current handle position
+    var top = this.fixture_1.find('.scrollbar-handle').css('top');
+
+     // now double content
+    this.fixture_1.find('.scrollbar-pane').children().clone().appendTo('.scrollbar-pane');
+
+    // repaint scrollbar
+    this.fixture_1.scrollbar("repaint");
+
+    // assert reduced handle position
+    assertTrue(this.fixture_1.find('.scrollbar-handle').css('top') < top);
+  }
 });
 
 

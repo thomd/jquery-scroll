@@ -57,47 +57,109 @@
 //
 (function($, document){
 
-    $.fn.scrollbar = function(opts){
+    // due to possible conflicts in jQuery’s namespace with lots of namespace-polluting methods, we use this method-delegation pattern (well known from jquery-UI):
+    //
+    // Rather than naming methods like this:
+    //
+    //      container.scrollbarRepaint();
+    //
+    // the following method-command should be used:
+    //
+    //      container.scrollbar('repaint');
+    //
+    var methods = {
+        init: function(fn, opts){
 
-        // Extend default options
-        var options = $.extend({}, $.fn.scrollbar.defaults, opts);
+            // Extend default options
+            var options = $.extend({}, $.fn.scrollbar.defaults, opts);
+
+            //
+            // append scrollbar to selected overflowed containers and return jquery object for chainability
+            //
+            return this.each(function(){
+
+                var container = $(this)
+
+                    // properties
+                  , props = {
+                        arrows: options.arrows
+                    };
+
+                // set container height explicitly if given by an option
+                if(options.containerHeight != 'auto'){
+                    container.height(options.containerHeight);
+                }
+
+                // save container height in properties
+                props.containerHeight = container.height();
+
+                // save content height in properties
+                props.contentHeight = $.fn.scrollbar.contentHeight(container);
+
+                // if the content height is lower than the container height, do nothing and return.
+                if(props.contentHeight <= props.containerHeight){
+                    return true;
+                }
+
+                // create a new scrollbar object and append to DOM node for later use
+                this.scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
+
+                // build HTML, initialize Handle and append Events
+                this.scrollbar.buildHtml().setHandle().appendEvents();
+
+                // callback function after creation of scrollbar
+                if(typeof fn === "function"){
+                    fn(container.find(".scrollbar-pane"), this.scrollbar);
+                }
+            });
+        },
 
 
+        // repaint the height and position of the scroll handle
         //
-        // append scrollbar to selected overflowed containers and return jquery object for chainability
+        // this method must be called in case content is added or reoved from the container.
         //
-        return this.each(function(){
+        // usage:
+        //   $('selector').scrollbar("repaint");
+        //
+        repaint: function(){
+            return this.each(function(){
+                this.scrollbar.repaint();
+            });
+        },
 
-            var container = $(this)
 
-                // properties
-              , props = {
-                    arrows: options.arrows
-                };
+        // scroll to a specific item within the container or to a specific distance of the content from top
+        //
+        // usage:
+        //   $('selector').scrollbar("scrollto");                    // scroll to top of content
+        //   $('selector').scrollbar("scrollto", 20);                // scroll to content 20px from top
+        //   $('selector').scrollbar("scrollto", "top");             // scroll to top of content
+        //   $('selector').scrollbar("scrollto", "middle");          // scroll to vertically middle of content
+        //   $('selector').scrollbar("scrollto", "bottom");          // scroll to bottom of content
+        //   $('selector').scrollbar("scrollto", $('item'));         // scroll to first content item identified by selector $('item')
+        //
+        scrollto: function(to){
+            return this.each(function(){
+                this.scrollbar.scrollto(to);
+            });
+        }
+    }
 
-            // set container height explicitly if given by an option
-            if(options.containerHeight != 'auto'){
-                container.height(options.containerHeight);
-            }
-
-            // save container height in properties
-            props.containerHeight = container.height();
-
-            // save content height in properties
-            props.contentHeight = $.fn.scrollbar.contentHeight(container);
-
-            // if the content height is lower than the container height, do nothing and return.
-            if(props.contentHeight <= props.containerHeight){
-                return true;
-            }
-
-            // create a new scrollbar object
-            var scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
-
-            // build HTML, initialize Handle and append Events
-            scrollbar.buildHtml().initHandle().appendEvents();
-        });
-    };
+    $.fn.scrollbar = function(method){
+        if(methods[method]){
+            return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+        }
+        else if(typeof method === "function" || method === undefined){
+            return methods.init.apply(this, arguments);
+        }
+        else if(typeof method === "object"){
+            return methods.init.apply(this, [null, method]);
+        }
+        else {
+            $.error("method '" + method + "' does not exist for $.fn.scrollbar");
+        }
+    }
 
 
 
@@ -236,14 +298,17 @@
                 'cursor':   'pointer'
             });
 
+            // set initial position of pane to 'top'
+            this.pane.top = 0;
+
             return this;
         },
 
 
         //
-        // calculate positions and dimensions of handle and arrow-handles
+        // calculate dimensions of handle
         //
-        initHandle: function(){
+        setHandle: function(){
             this.props.handleContainerHeight = this.handleContainer.height();
             this.props.contentHeight = this.pane.height();
 
@@ -254,8 +319,8 @@
             // if handle has a border (always be aware of the css box-model), we need to correct the handle height.
             this.handle.height(2 * this.handle.height() - this.handle.outerHeight(true));
 
-            // min- and max-range for handle
-            this.props.handleTop = {
+            // min- and max-position for handle
+            this.props.handlePosition = {
                 min: 0,
                 max: this.props.handleContainerHeight - this.props.handleHeight
             };
@@ -263,8 +328,13 @@
             // ratio of handle-container-height to content-container-height (to calculate position of content related to position of handle)
             this.props.handleContentRatio = (this.props.contentHeight - this.props.containerHeight) / (this.props.handleContainerHeight - this.props.handleHeight);
 
-            // initial position of handle at top
-            this.handle.top = 0;
+            // set initial position of handle to 'top'
+            // if new content is added into the container, handle.top needs to be recalculated
+            if(this.handle.top == undefined){
+                this.handle.top = 0;
+            } else {
+                this.handle.top = -1 * this.pane.top / this.props.handleContentRatio;
+            }
 
             return this;
         },
@@ -276,6 +346,7 @@
         appendEvents: function(){
 
             // append drag-drop event on scrollbar-handle
+            // the events 'mousemove.handle' and 'mouseup.handle' are dynamically appended in the startOfHandleMove-function
             this.handle.bind('mousedown.handle', $.proxy(this, 'startOfHandleMove'));
 
             // append mousedown event on handle-container
@@ -305,10 +376,46 @@
         //
         // get mouse position helper
         //
-        mousePosition: function(ev) {
+        mousePosition: function(ev){
             return ev.pageY || (ev.clientY + (document.documentElement.scrollTop || document.body.scrollTop)) || 0;
         },
 
+
+        //
+        // repaint scrollbar height and position
+        //
+        repaint: function(){
+            this.setHandle();
+            this.setHandlePosition();
+        },
+
+
+        //
+        // scroll to a specific distance from the top
+        //
+        scrollto: function(to){
+
+            var distance = 0;
+
+            if(typeof to == "number"){
+                distance = (to < 0 ? 0 : to) / this.props.handleContentRatio;
+            }
+            else if(typeof to == "string"){
+                if(to == "bottom"){
+                    distance = this.props.handlePosition.max;
+                }
+                if(to == "middle"){
+                    distance = Math.ceil(this.props.handlePosition.max / 2);
+                }
+            }
+            else if(typeof to == "object" && !$.isPlainObject(to)) {
+                distance = Math.ceil(to.position().top / this.props.handleContentRatio);
+            }
+
+            this.handle.top = distance;
+            this.setHandlePosition();
+            this.setContentPosition();
+        },
 
 
         // ---------- event handler ---------------------------------------------------------------
@@ -329,7 +436,7 @@
             // bind mousemove- and mouseout-event on document (binding it to document allows having a mousepointer outside handle while moving)
             $(document).bind('mousemove.handle', $.proxy(this, 'onHandleMove')).bind('mouseup.handle', $.proxy(this, 'endOfHandleMove'));
 
-            // add class for visual change while moving handle
+            // add CSS classes for visual change while moving handle
             this.handle.addClass('move');
             this.handleContainer.addClass('move');
         },
@@ -372,9 +479,9 @@
         //
         setHandlePosition: function(){
 
-            // stay within range [handleTop.min, handleTop.max]
-            this.handle.top = (this.handle.top > this.props.handleTop.max) ? this.props.handleTop.max : this.handle.top;
-            this.handle.top = (this.handle.top < this.props.handleTop.min) ? this.props.handleTop.min : this.handle.top;
+            // stay within range [handlePosition.min, handlePosition.max]
+            this.handle.top = (this.handle.top > this.props.handlePosition.max) ? this.props.handlePosition.max : this.handle.top;
+            this.handle.top = (this.handle.top < this.props.handlePosition.min) ? this.props.handlePosition.min : this.handle.top;
 
             this.handle[0].style.top = this.handle.top + 'px';
         },
@@ -404,7 +511,7 @@
             this.setContentPosition();
 
             // prevent default scrolling of the entire document if handle is within [min, max]-range
-            if(this.handle.top > this.props.handleTop.min && this.handle.top < this.props.handleTop.max){
+            if(this.handle.top > this.props.handlePosition.min && this.handle.top < this.props.handlePosition.max){
                 ev.preventDefault();
             }
         },
@@ -478,7 +585,7 @@
         // move handle by a distinct step while click on arrows or handle-container
         //
         moveHandle: function(){
-            this.handle.top = (this.handle.direction === 1) ? Math.min(this.handle.top + this.handle.step, this.props.handleTop.max) : Math.max(this.handle.top - this.handle.step, this.props.handleTop.min);
+            this.handle.top = (this.handle.direction === 1) ? Math.min(this.handle.top + this.handle.step, this.props.handlePosition.max) : Math.max(this.handle.top - this.handle.step, this.props.handlePosition.min);
             this.handle[0].style.top = this.handle.top + 'px';
 
             this.setContentPosition();
