@@ -287,7 +287,7 @@
             this.handleContainer.css({
                 'position': 'absolute',
                 'top':      this.handleArrowUp.outerHeight(true),
-                'height':   (this.props.containerHeight - (this.container.outerHeight(true) - this.container.height()) - this.handleArrowUp.outerHeight(true) - this.handleArrowDown.outerHeight(true)) + 'px'
+                'height':   (this.props.containerHeight - this.handleArrowUp.outerHeight(true) - this.handleArrowDown.outerHeight(true)) + 'px'
             });
             this.handle.css({
                 'position': 'absolute',

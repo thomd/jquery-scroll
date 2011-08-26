@@ -1,18 +1,23 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!doctype html>
 <html>
-	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<title>Custom Scrollbars - a jQuery Plugin</title>
+  <head>
+    <meta charset="utf-8" />
+    <title>jquery scroll - have a custom styled scrollbar</title>
 
-		<style type="text/css" media="screen">
+    <style type="text/css" media="screen">
       /* demo styles */
-			html, body{background:#EEE;color:#111;font:13px Helvetica,sans-serif;}
-			body{margin:20px auto;width:1200px;}
-			.css-scrollbar{width:250px;height:300px;margin:100px 25px;-moz-box-shadow:0px 0px 12px 3px #CCC;overflow:hidden;float:left;background:#FFF;border:1px solid #B2B2B2;}
-			.css-scrollbar.simple{width:250px;height:400px;margin:100px 25px;overflow:hidden;float:left;background:#EEE;-moz-box-shadow:none;border:none;}
-			.css-scrollbar p{margin:0;padding:8px;line-height:1.4;}
-		</style>
-		
+      html, body{background:#EEE;color:#111;font:13px Helvetica,sans-serif;}
+      body{margin:20px auto;width:1200px;}
+      #demo1,#demo2,#demo3,#demo4{float:left;}
+      .action{margin: 50px 0 10px 0;}
+      a{color:#F44;text-decoration:none;}
+      a:hover{text-decoration:underline;}
+      .scrollbar{width:250px;height:300px;margin:0 60px 0 0;-moz-box-shadow:0px 0px 12px 3px #CCC;overflow:hidden;float:left;background:#FFF;border:6px solid #B2B2B2;}
+      .scrollbar.simple{width:250px;height:400px;margin:0 60px 0 0;overflow:hidden;float:left;background:#EEE;-moz-box-shadow:none;border:none;}
+      .scrollbar.noborder{border:none;}
+      .scrollbar p{margin:0;padding:8px;line-height:1.4;}
+    </style>
+
     <style type="text/css">
       ul.months {
         display: block;
@@ -21,12 +26,11 @@
         background: #FFF;
         border: 1px solid #B2B2B2;
         list-style: none;
-        margin: 100px 30px;
+        margin: 0 60px 0 0;
         max-height: 220px;
         overflow-x: hidden;
         overflow-y: auto;
-        padding: 2px 0;
-        float: left;
+        padding: 4px 0;
       }
       ul.months li {
         color: #111;
@@ -36,69 +40,108 @@
         text-align: left;
         white-space: nowrap;
       }
-      
+
       .plain {
         max-height: 100px;
       }
     </style>
-		
-		<link href="css/scrollbar.css" type="text/css" rel="stylesheet" />
+
+    <link href="css/scrollbar.css" type="text/css" rel="stylesheet" />
   </head>
   <body>
 
-    <div class="fff plain no-arrows">
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
+    <div id="demo1">
+      <div class="action"><a href="#">jump to 25</a></div>
+      <ul id="container1" class="scrollbar fff months">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+        <li>5</li>
+        <li>6</li>
+        <li>7</li>
+        <li>8</li>
+        <li>9</li>
+        <li>10</li>
+        <li>11</li>
+        <li>12</li>
+        <li>13</li>
+        <li>14</li>
+        <li>15</li>
+        <li>16</li>
+        <li>17</li>
+        <li>18</li>
+        <li>19</li>
+        <li>20</li>
+        <li>21</li>
+        <li>22</li>
+        <li>23</li>
+        <li>24</li>
+        <li>25</li>
+        <li>26</li>
+        <li>27</li>
+        <li>28</li>
+        <li>29</li>
+        <li>30</li>
+        <li>31</li>
+        <li>32</li>
+        <li>33</li>
+        <li>34</li>
+        <li>35</li>
+        <li>36</li>
+        <li>37</li>
+        <li>38</li>
+        <li>39</li>
+        <li>40</li>
+        <li>41</li>
+        <li>42</li>
+        <li>43</li>
+        <li>44</li>
+        <li>45</li>
+        <li>46</li>
+        <li>47</li>
+        <li>48</li>
+        <li>49</li>
+        <li>50</li>
+        <li>51</li>
+        <li>52</li>
+        <li>53</li>
+        <li>54</li>
+        <li>55</li>
+        <li>56</li>
+        <li>57</li>
+        <li>58</li>
+        <li>59</li>
+        <li>60</li>
+        <li>61</li>
+        <li>62</li>
+        <li>63</li>
+        <li>64</li>
+      </ul>
     </div>
 
-    <ul class="fff months">
-      <li>1</li>
-      <li>2</li>
-      <li>3</li>
-      <li>4</li>
-      <li>5</li>
-      <li>6</li>
-      <li>7</li>
-      <li>8</li>
-      <li>9</li>
-      <li>10</li>
-      <li>11</li>
-      <li>12</li>
-      <li>13</li>
-      <li>14</li>
-      <li>15</li>
-      <li>16</li>
-      <li>17</li>
-      <li>18</li>
-      <li>19</li>
-      <li>20</li>
-      <li>21</li>
-      <li>22</li>
-      <li>23</li>
-      <li>24</li>
-      <li>25</li>
-      <li>26</li>
-      <li>27</li>
-      <li>28</li>
-      <li>29</li>
-      <li>30</li>
-      <li>31</li>
-    </ul>
-
-    <div class="css-scrollbar simple">
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
+    <div id="demo2">
+      <div class="action"><a href="#">add paragraph</a> | <a href="#">remove paragraph</a></div>
+      <div id="container2" class="scrollbar simple">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd. Culpa qui officia deserunt mollit anim id est laborum. Excepteur sint ocjshdkalksj jdsfsd.</p>
+      </div>
     </div>
 
-    <div class="css-scrollbar">
+    <div id="demo3">
+      <div class="action">&nbsp;</div>
+    <div class="scrollbar">
       <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur.</p>
       <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur.</p>
+    </div>
+    </div>
+
+    <div id="demo4">
+      <div class="action">&nbsp;</div>
+    <div class="scrollbar noborder">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Excepteur.</p>
+    </div>
     </div>
 
     <!--[if IE]>
@@ -107,11 +150,26 @@
     <script type="text/javascript" src="jquery-1.4.2.js"></script>
     <script type="text/javascript" src="jquery.scroll.js"></script>
     <script type="text/javascript">
-      // append scrollbar to all DOM nodes with class="css-scrollbar"
-      $(function(){
-        $('.css-scrollbar').scrollbar();
-        $('.fff').scrollbar();
-      })
+      $('.scrollbar').scrollbar();
+
+
+      $('#demo1 a').click(function(ev){
+          ev.preventDefault();
+          $('#container1').scrollbar('scrollto', $('.scrollbar:first li:eq(24)'));
+      });
+
+
+      $('#demo2 a:first').click(function(ev){
+          ev.preventDefault();
+          $('#demo2').find('.scrollbar-pane').children(':first').clone().appendTo('.scrollbar-pane');
+          $('#container2').scrollbar('repaint');
+      });
+      $('#demo2 a:last').click(function(ev){
+          ev.preventDefault();
+          $('#demo2').find('.scrollbar-pane').children(':first').remove();
+          $('#container2').scrollbar('repaint');
+      });
+
     </script>
   </body>
 </html>
