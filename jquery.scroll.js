@@ -1,60 +1,90 @@
 /*jslint eqeqeq: true, regexp: true */
 /*global document, window, setInterval, clearInterval, handler, jQuery */
 
-//
-//     jquery.scroll.js 0.3
-//     a jQuery plugin for custom scrollbars
-//
-//     Thomas Duerr, me-at-thomd.net
-//     03.2010
-//     requires   jquery v1.4.2
-//
-//
-// Usage:
-//
-//    Append scrollbar to an arbitrary container with overflowed content:
-//
-//         $('selector').scrollbar();
-//
-//
-//    Append scrollbar without arrows on top/bottom:
-//
-//         $('selector').scrollbar({
-//            arrows: false
-//         });
-//
-//
-//
-// A vertical scrollbar is based on the following box model:
-//
-//        +----------------------------------+
-//        |            <----------------------------- content container
-//        |  +-----------------+  +------+   |
-//        |  |                 |  |   <-------------- handle arrow up
-//        |  |                 |  |      |   |
-//        |  |                 |  +------+   |
-//        |  |                 |  | +--+ |   |
-//        |  |                 |  | |  | |   |
-//        |  |                 |  | | <-------------- handle
-//        |  |                 |  | |  | |   |
-//        |  |                 |  | |  | |   |
-//        |  |                 |  | |  | |   |
-//        |  |                 |  | +--+ |   |
-//        |  |                 |  |      |   |
-//        |  |                 |  |   <-------------- handle container
-//        |  |                 |  |      |   |
-//        |  |         <----------------------------- pane
-//        |  |                 |  |      |   |
-//        |  |                 |  |      |   |
-//        |  |                 |  +------+   |
-//        |  |                 |  |      |   |
-//        |  |                 |  |   <-------------- handle arrow down
-//        |  +-----------------+  +------+   |
-//        |                                  |
-//        +----------------------------------+
-//
-//
-//
+/*!
+jquery scroll - a custom stylable scrollbar
+Version 0.4
+https://github.com/thomd/jquery-scroll
+Copyright (c) 2011 Thomas Duerr (me-at-thomd-dot-net)
+Licensed under the MIT license (https://raw.github.com/thomd/jquery-scroll/master/MIT-LICENSE)
+*/
+
+/*
+Usage Examples:
+
+    Create a custom scrollbar to an arbitrary container with overflowed content:
+
+         $('selector').scrollbar();
+
+
+    Create a custom scrollbar without arrows on top/bottom:
+
+         $('selector').scrollbar({
+            arrows: false
+         });
+
+
+    Create a custom scrollbar and call a function once the rendering is complete:
+
+          $('selector').scrollbar(function(){});
+
+
+    Repaint scrollbar to reflect dynamically added content in the hight ans position of the scrollbar
+
+          $('selector').scrollbar('repaint');
+
+
+    Scroll to a specific item within the container:
+
+          $('selector').scrollbar('scrollto', $('item'));
+
+
+    Scroll to bottom of content
+
+          $('selector').scrollbar('scrollto', 'bottom');
+
+
+
+Dependency:
+
+    jQuery version 1.4.3+
+    (older verisons may also work)
+
+
+
+Support:
+
+    Firefox 3+
+    Safari 4+
+    Chrome 6+
+    (other browser may also work, these are also the browsers I tested)
+
+
+
+Changelog:
+
+    v0.4
+          new:  added plugin methods 'repaint' and 'scrollto'.
+          fix:  the content height for plain text nodes is now calculated correctly.
+
+    v0.3
+          fix:  removed obsolete div while meassuring content height.
+          fix:  take care of borders on the container. (thanks bennyschudel)
+
+    v0.2
+          fix:  fixed bug when setting container height by an option.
+          fix:  fixed margin-collapsing related bug in calculation of content height.
+          new:  moved initialization code to object creation to make things more object oriented.
+          new:  options added to set hight of the scrollbar handle explicitly.
+
+    v0.1
+          initial version.
+
+
+
+
+
+*/
 (function($, document){
 
     // due to possible conflicts in jQuery’s namespace with lots of namespace-polluting methods, we use this method-delegation pattern (well known from jquery-UI):
@@ -163,25 +193,18 @@
 
 
 
-    // # default options
     //
+    // default options
     //
     $.fn.scrollbar.defaults = {
-
-        // ### containerHeight `Number` or `'auto'`
-        //
-        // height of content container. If set to `'auto'`, the naturally rendered height is used
-        containerHeight:   'auto',
-
-        arrows:            true,       // render up- and down-arrows
-        handleHeight:      'auto',     // height of handle [px || 'auto']. If set to 'auto', the height will be calculated proportionally to the container-content height.
-        handleMinHeight:   30,         // min-height of handle [px]. This property will only be used if handleHeight is set to 'auto'
-
-        scrollSpeed:       50,         // speed of handle while mousedown on arrows [milli sec]
-        scrollStep:        20,         // handle increment between two mousedowns on arrows [px]
-
-        scrollSpeedArrows: 40,         // speed of handle while mousedown within the handle container [milli sec]
-        scrollStepArrows:  3           // handle increment between two mousedowns within the handle container [px]
+        containerHeight     : 'auto', // height of content container [Number in px || 'auto']. If set to 'auto', the naturally rendered height is used.
+        arrows              : true,   // render up- and down-arrows [true || false].
+        handleHeight        : 'auto', // height of handle [Number in px || 'auto']. If set to 'auto', the height will be calculated proportionally to the container-content height.
+        handleMinHeight     : 30,     // minimum height of handle [Number in px]. This property will only be used if handleHeight-option is set to 'auto'.
+        scrollTimeout       : 50,     // timeout of handle speed while mousedown on arrows [Number in milli sec].
+        scrollStep          : 20,     // increment of handle position between two mousedowns on arrows [Number in px].
+        scrollTimeoutArrows : 40,     // timeout of handle speed while mousedown in the handle container [Number in milli sec].
+        scrollStepArrows    : 3       // increment of handle position between two mousedowns in the handle container [px].
     };
 
 
@@ -207,26 +230,63 @@
     $.fn.scrollbar.Scrollbar.prototype = {
 
         //
-        // build DOM nodes for pane and scroll-handle
+        // build DOM nodes for pane and scroll-handle based on the following box model:
         //
-        //   from:
+        //        +----------------------------------+
+        //        |            <----------------------------- content container
+        //        |  +-----------------+  +------+   |
+        //        |  |                 |  |   <-------------- handle arrow up
+        //        |  |                 |  |      |   |
+        //        |  |                 |  +------+   |
+        //        |  |                 |  | +--+ |   |
+        //        |  |                 |  | |  | |   |
+        //        |  |                 |  | | <-------------- handle
+        //        |  |                 |  | |  | |   |
+        //        |  |                 |  | |  | |   |
+        //        |  |                 |  | |  | |   |
+        //        |  |                 |  | +--+ |   |
+        //        |  |                 |  |      |   |
+        //        |  |                 |  |   <-------------- handle container
+        //        |  |                 |  |      |   |
+        //        |  |         <----------------------------- pane
+        //        |  |                 |  |      |   |
+        //        |  |                 |  |      |   |
+        //        |  |                 |  +------+   |
+        //        |  |                 |  |      |   |
+        //        |  |                 |  |   <-------------- handle arrow down
+        //        |  +-----------------+  +------+   |
+        //        |                                  |
+        //        +----------------------------------+
         //
-        //      <div class="foo">                                   --> arbitrary element with a fixed height or a max-height lower that its containing elements
-        //          [...]
-        //      </div>
         //
-        //   to:
         //
-        //      <div class="foo">                                   --> this.container
-        //          <div class="scrollbar-pane">                    --> this.pane
-        //              [...]
-        //          </div>
-        //          <div class="scrollbar-handle-container">        --> this.handleContainer
-        //              <div class="scrollbar-handle"></div>        --> this.handle
-        //          </div>
-        //          <div class="scrollbar-handle-up"></div>         --> this.handleArrows
-        //          <div class="scrollbar-handle-down"></div>       --> this.handleArrows
-        //      </div>
+        //   DOM before:
+        //
+        //         <div class="foo" id="content_container">                       --> arbitrary element with a fixed height or a max-height lower that its containing elements
+        //             [...content...]
+        //         </div>
+        //
+        //
+        //   DOM after applying plugin:
+        //
+        //         <div class="foo">                                              --> this.container
+        //             <div class="scrollbar-pane" id="content_container">        --> this.pane
+        //                 [...content...]
+        //             </div>
+        //             <div class="scrollbar-handle-container">                   --> this.handleContainer
+        //                 <div class="scrollbar-handle"></div>                   --> this.handle
+        //             </div>
+        //             <div class="scrollbar-handle-up"></div>                    --> this.handleArrows
+        //             <div class="scrollbar-handle-down"></div>                  --> this.handleArrows
+        //         </div>
+        //
+        //
+        //   If the option moveContainerId is set to true, an id attribute on the container is moved to it's
+        //   child node 'pane' which holds the content after applying the plugin. This may be useful when dynamic
+        //   content is added via $('#content_container').load().
+        //
+        //   The above class-attribute values can be used for styling the scrollbar with CSS.
+        //
         //
         //
         // TODO: use detach-transform-attach or DOMfragment
@@ -551,7 +611,7 @@
             });
 
             // repeat handle movement while mousedown
-            var timer = setInterval($.proxy(this.moveHandle, this), this.opts.scrollSpeed);
+            var timer = setInterval($.proxy(this.moveHandle, this), this.opts.scrollTimeout);
         },
 
 
@@ -571,7 +631,7 @@
             $(ev.target).addClass('move');
 
             // repeat handle movement while mousedown
-            var timer = setInterval($.proxy(this.moveHandle, this), this.opts.scrollSpeedArrows);
+            var timer = setInterval($.proxy(this.moveHandle, this), this.opts.scrollTimeoutArrows);
 
             // stop handle movement on mouseup
             $(document).one('mouseup.arrows', function(){
