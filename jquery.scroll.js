@@ -1,6 +1,3 @@
-/*jslint eqeqeq: true, regexp: true */
-/*global document, window, setInterval, clearInterval, handler, jQuery */
-
 /*!
 jquery scroll - a custom stylable scrollbar
 Version 0.4
