@@ -6,6 +6,7 @@ Copyright (c) 2011 Thomas Duerr (me-at-thomd-dot-net)
 Licensed under the MIT license (https://raw.github.com/thomd/jquery-scroll/master/MIT-LICENSE)
 */
 
+;
 /*
 Usage Examples:
 
