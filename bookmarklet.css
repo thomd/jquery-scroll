@@ -1,0 +1,41 @@
+.scrollbar-pane {
+    margin-right: 10px;
+}
+
+.scrollbar-handle-container {
+    background: #EEE;
+    width: 10px;
+}
+
+.scrollbar-handle {
+    width: 10px;
+    background: #999;
+}
+
+.scrollbar-handle:hover {
+    background: #666;
+}
+
+.scrollbar-handle.move {
+    background: #111;
+}
+
+.scrollbar-handle-up {
+    width: 10px;
+    height: 20px;
+    background: #DDD;
+}
+
+.scrollbar-handle-up:hover {
+    background: #666;
+}
+
+.scrollbar-handle-down {
+    width: 10px;
+    height: 20px;
+    background: #DDD;
+}
+
+.scrollbar-handle-down:hover {
+    background: #666;
+}
