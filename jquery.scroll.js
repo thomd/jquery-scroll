@@ -152,7 +152,9 @@ Changelog:
         //
         repaint: function(){
             return this.each(function(){
-                this.scrollbar.repaint();
+                if(this.scrollbar) {
+                  this.scrollbar.repaint();
+                }
             });
         },
 
