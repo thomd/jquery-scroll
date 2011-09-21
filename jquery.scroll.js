@@ -152,7 +152,9 @@ Changelog:
         //
         repaint: function(){
             return this.each(function(){
-                this.scrollbar.repaint();
+                if(this.scrollbar) {
+                  this.scrollbar.repaint();
+                }
             });
         },
 
@@ -171,6 +173,19 @@ Changelog:
             return this.each(function(){
                 this.scrollbar.scrollto(to);
             });
+        },
+        
+        // Remove the scrollbar (and the generated HTML elements).
+        //
+        // usage:
+        //   $('selector').scrollbar("unscrollbar");
+        //
+        unscrollbar: function() {
+          return this.each(function() {
+            if(this.scrollbar) {
+              this.scrollbar.unscrollbar();
+            }
+          });
         }
     }
 
@@ -473,6 +488,16 @@ Changelog:
             this.handle.top = distance;
             this.setHandlePosition();
             this.setContentPosition();
+        },
+        
+        //
+        // Remove scrollbar dom elements
+        //
+        unscrollbar: function() {
+          var holder = this.container.find('.scrollbar-pane').find('*');
+          this.container.empty();
+          this.container.append(holder);
+          this.container.attr('style','');
         },
 
 
