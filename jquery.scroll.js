@@ -184,6 +184,7 @@ Changelog:
           return this.each(function() {
             if(this.scrollbar) {
               this.scrollbar.unscrollbar();
+			  this.scrollbar = null;
             }
           });
         }
