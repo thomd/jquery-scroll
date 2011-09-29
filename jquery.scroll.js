@@ -495,9 +495,9 @@ Changelog:
         // Remove scrollbar dom elements
         //
         unscrollbar: function() {
-          var holder = this.container.find('.scrollbar-pane:first').contents();
-          this.container.empty();
-          this.container.append(holder);
+          var holder = this.container.find('.scrollbar-pane:first');
+          this.container.children().not('.scrollbar-pane').remove();
+          holder.replaceWith(holder.contents());
           this.container.attr('style','');
         },
 
