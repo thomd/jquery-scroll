@@ -805,7 +805,7 @@ Changelog:
         if(orgEvent.wheelDelta){
             delta = orgEvent.wheelDelta / 120;
         }
-        if(event.detail){
+        if(orgEvent.detail){
             delta = -orgEvent.detail / 3;
         }
 
