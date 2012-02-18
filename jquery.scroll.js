@@ -588,7 +588,7 @@ Changelog:
         onMouseWheel: function(ev, delta){
 
             // calculate new handle position
-            this.handle.top -= delta;
+            this.handle.top -= 6 * delta;
 
             this.setHandlePosition();
             this.setContentPosition();
