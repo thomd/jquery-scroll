@@ -171,10 +171,12 @@ Changelog:
         //
         scrollto: function(to){
             return this.each(function(){
-                this.scrollbar.scrollto(to);
+                if(this.scrollbar) {
+                    this.scrollbar.scrollto(to);
+                }
             });
         },
-        
+
         // Remove the scrollbar (and the generated HTML elements).
         //
         // usage:
@@ -489,7 +491,7 @@ Changelog:
             this.setHandlePosition();
             this.setContentPosition();
         },
-        
+
         //
         // Remove scrollbar dom elements
         //
