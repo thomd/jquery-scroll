@@ -184,6 +184,7 @@ Changelog:
           return this.each(function() {
             if(this.scrollbar) {
               this.scrollbar.unscrollbar();
+			  this.scrollbar = null;
             }
           });
         }
@@ -494,7 +495,7 @@ Changelog:
         // Remove scrollbar dom elements
         //
         unscrollbar: function() {
-          var holder = this.container.find('.scrollbar-pane').find('*');
+          var holder = this.container.find('.scrollbar-pane:first').contents().clone(true);
           this.container.empty();
           this.container.append(holder);
           this.container.attr('style','');
