@@ -458,8 +458,22 @@ Changelog:
         // repaint scrollbar height and position
         //
         repaint: function(){
+            this.setHandleContainerSize();
             this.setHandle();
             this.setHandlePosition();
+        },
+
+        //
+        // update the height of the handleContainer
+        //
+        setHandleContainerSize: function() {
+            this.props.containerHeight = this.container.height();
+
+            this.handleContainer.css({
+                'position': 'absolute',
+                'top':      this.handleArrowUp.outerHeight(true),
+                'height':   (this.props.containerHeight - this.handleArrowUp.outerHeight(true) - this.handleArrowDown.outerHeight(true)) + 'px'
+            });
         },
 
 
