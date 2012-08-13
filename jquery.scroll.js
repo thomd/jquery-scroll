@@ -124,11 +124,6 @@ Changelog:
                 // save content height in properties
                 props.contentHeight = $.fn.scrollbar.contentHeight(container);
 
-                // if the content height is lower than the container height, do nothing and return.
-                //if(props.contentHeight <= props.containerHeight){
-                    //return true;
-                //}
-
                 // create a new scrollbar object and append to DOM node for later use
                 this.scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
 
