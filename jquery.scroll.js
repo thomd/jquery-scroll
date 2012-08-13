@@ -125,9 +125,9 @@ Changelog:
                 props.contentHeight = $.fn.scrollbar.contentHeight(container);
 
                 // if the content height is lower than the container height, do nothing and return.
-                if(props.contentHeight <= props.containerHeight){
-                    return true;
-                }
+                //if(props.contentHeight <= props.containerHeight){
+                    //return true;
+                //}
 
                 // create a new scrollbar object and append to DOM node for later use
                 this.scrollbar = new $.fn.scrollbar.Scrollbar(container, props, options);
@@ -139,11 +139,13 @@ Changelog:
                 if(typeof fn === "function"){
                     fn(container.find(".scrollbar-pane"), this.scrollbar);
                 }
+
+				this.scrollbar.repaint();
             });
         },
 
 
-        // repaint the height and position of the scroll handle
+	// repaint the height and position of the scroll handle
         //
         // this method must be called in case content is added or reoved from the container.
         //
@@ -467,6 +469,8 @@ Changelog:
 		// update the height of the handleContainer
 		//
         setHandleContainerSize: function() {
+			var deltaY = this.props.containerHeight - this.container.height();
+
             this.props.containerHeight = this.container.height();
 
 			// hide the scroller if the content height is lower than the
@@ -486,6 +490,11 @@ Changelog:
                 'top':      this.handleArrowUp.outerHeight(true),
                 'height':   (this.props.containerHeight - this.handleArrowUp.outerHeight(true) - this.handleArrowDown.outerHeight(true)) + 'px'
             });
+
+			// Scroll up content as container gets bigger.
+			this.handle.top -= deltaY;
+			this.setHandlePosition();
+			this.setContentPosition();
 		},
 
 
