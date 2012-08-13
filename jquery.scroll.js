@@ -458,23 +458,35 @@ Changelog:
         // repaint scrollbar height and position
         //
         repaint: function(){
-            this.setHandleContainerSize();
+			this.setHandleContainerSize();
             this.setHandle();
             this.setHandlePosition();
         },
 
-        //
-        // update the height of the handleContainer
-        //
+		//
+		// update the height of the handleContainer
+		//
         setHandleContainerSize: function() {
             this.props.containerHeight = this.container.height();
+
+			// hide the scroller if the content height is lower than the
+			// container height
+			if(this.props.contentHeight <= this.props.containerHeight) {
+            	this.handleContainer.hide();
+				this.handleArrowDown.hide();
+				this.handleArrowUp.hide();
+			} else {
+            	this.handleContainer.show();
+				this.handleArrowDown.show();
+				this.handleArrowUp.show();
+			}
 
             this.handleContainer.css({
                 'position': 'absolute',
                 'top':      this.handleArrowUp.outerHeight(true),
                 'height':   (this.props.containerHeight - this.handleArrowUp.outerHeight(true) - this.handleArrowDown.outerHeight(true)) + 'px'
             });
-        },
+		},
 
 
         //
