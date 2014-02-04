@@ -178,12 +178,12 @@ Changelog:
         // Remove the scrollbar (and the generated HTML elements).
         //
         // usage:
-        //   $('selector').scrollbar("unscrollbar");
+        //   $('selector').scrollbar("remove");
         //
-        unscrollbar: function() {
+        remove: function() {
           return this.each(function() {
             if(this.scrollbar) {
-              this.scrollbar.unscrollbar();
+              this.scrollbar.remove();
             }
           });
         }
@@ -493,7 +493,7 @@ Changelog:
         //
         // Remove scrollbar dom elements
         //
-        unscrollbar: function() {
+        remove: function() {
           var holder = this.container.find('.scrollbar-pane').find('*');
           this.container.empty();
           this.container.append(holder);
